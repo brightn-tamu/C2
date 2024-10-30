@@ -173,6 +173,13 @@ int main() {
                                     Final check for level 3 /payload
                                     call function_a
 
+        Level 2 encryption logic
+            XOR the Password with an initial key.
+            Split the result into even and odd indexed elements.
+            Shift and XOR (Even-Indexed Elements).
+            XOR (Odd-Indexed Elements).
+            Combine the transformed even and odd elements into the final format.
+            Apply an Additional XOR to the combined array as a final encryption step.
             
     */
     int debugger_present = debugger_check();
@@ -224,20 +231,10 @@ int function_a(){
                   c1c224b03cd9bc7b6a86d77f5dace40191766c485cd55dc48caf9ac873335d6f 
                   using SHA-256
 
-                  Hex array format: unsigned char hashed_key[SHA256_DIGEST_LENGTH] = 
-                  {0xc1, 0xc2, 0x24, 0xb0, 0x3c, 0xd9, 0xbc, 0x7b, 0x6a, 0x86, 0xd7, 0x7f, 
-                  0x5d, 0xac, 0xe4, 0x01, 0x91, 0x76, 0x6c, 0x48, 0x5c, 0xd5, 0x5d, 0xc4, 
-                  0x8c, 0xaf, 0x9a, 0xc8, 0x73, 0x33, 0x5d, 0x6f};
-
-                      // Print the hash in a C-style binary array format
-                        printf("unsigned char hashed_key[SHA256_DIGEST_LENGTH] = {");
-                        for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
-                            printf("0x%02x", hash[i]);
-                            if (i < SHA256_DIGEST_LENGTH - 1) {
-                                    printf(", ");
-                            }
-                        }
-                        printf("};\n");
+            Final sorted combined array: 0x0b, 0x0e, 0x78, 0x00, 0x59, 0xfa, 0x5e,
+            0x6b, 0xeb, 0x42, 0x7f, 0x1b, 0x13, 0x67, 0xab, 0x0f, 0x1a, 0xf3, 0xcf,
+            0x13, 0xdb, 0xfd, 0x3b, 0xa4, 0x4a, 0x64, 0xca, 0xe5, 0x66, 0x45, 0x95,
+            0x03
 
                   Binary: 
                     Binary representation of hash:
