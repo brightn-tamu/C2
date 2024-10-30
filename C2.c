@@ -9,6 +9,7 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <stdlib.h>
+#include <encrypt_password.c>
 
 // Check if Windows machine
 #if defined(_WIN32) || defined(_WIN64)
@@ -140,6 +141,10 @@ int main() {
     //Hash for Level 2
     const char *hashed_key = "c1c224b03cd9bc7b6a86d77f5dace40191766c485cd55dc48caf9ac873335d6f";
 
+    //Level 1/2 Passed?
+    int passTrue1 = 0;
+    int passTrue2 = 0;
+
     /*Bunch of file operations
     
     //Set up checks for debugger and GDB 
@@ -175,7 +180,15 @@ int main() {
 
     char passTrue = 0;
     char password[20];
-    const char correct_password[] = "Level1";
+
+    //level 1 password: swag_mesiah
+    //  step 1:caesar shift by 3
+    //  step 2: encrypt 
+    //    encryption key: 01234567890123456789012345678901
+    //    encryption iv: 0123456789012345
+    //  step 3: bitshift left by 1 with wraparound
+
+    const char correct_password[] = "0ff12bb203c614375be303ce2ed0dc58";
 
     int password_check(char *correct_password) {
     char password[20];
@@ -198,6 +211,9 @@ int function_a(){
     // Prompt the user to enter the password
     printf("Enter password: ");
     scanf("%19s", password);  // Read input, limiting to 19 characters to avoid overflow
+    //CORRECT PATH: caesar shift the password input
+    caesar_cipher(password,3);
+
 }
 
 /*          check for level 2 key (if level 1 has been completed)
@@ -206,7 +222,41 @@ int function_a(){
 
             key = Admin
                   c1c224b03cd9bc7b6a86d77f5dace40191766c485cd55dc48caf9ac873335d6f 
-                  using SHA256
+                  using SHA-256
+
+                  Hex array format: unsigned char hashed_key[SHA256_DIGEST_LENGTH] = 
+                  {0xc1, 0xc2, 0x24, 0xb0, 0x3c, 0xd9, 0xbc, 0x7b, 0x6a, 0x86, 0xd7, 0x7f, 
+                  0x5d, 0xac, 0xe4, 0x01, 0x91, 0x76, 0x6c, 0x48, 0x5c, 0xd5, 0x5d, 0xc4, 
+                  0x8c, 0xaf, 0x9a, 0xc8, 0x73, 0x33, 0x5d, 0x6f};
+
+                      // Print the hash in a C-style binary array format
+                        printf("unsigned char hashed_key[SHA256_DIGEST_LENGTH] = {");
+                        for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
+                            printf("0x%02x", hash[i]);
+                            if (i < SHA256_DIGEST_LENGTH - 1) {
+                                    printf(", ");
+                            }
+                        }
+                        printf("};\n");
+
+                  Binary: 
+                    Binary representation of hash:
+                    11000001 11000010 00100100 10110000 00111100 11011001 10111100 01111011 01101010 10000110 
+                    11010111 01111111 01011101 10101100 11100100 00000001 10010001 01110110 01101100 01001000 
+                    01011100 11010101 01011101 11000100 10001100 10101111 10011010 11001000 01110011 00110011 
+                    01011101 01101111 
+
+                    void print_hash_as_binary_bits(unsigned char *hash) {
+                    // Print each byte of the hash as an 8-bit binary string
+                        printf("Binary representation of hash:\n");
+                        for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
+                            for (int j = 7; j >= 0; j--) {
+                                printf("%d", (hash[i] >> j) & 1);  // Extract each bit
+                            }
+                            printf(" ");  // Separate bytes with a space for readability
+                        }
+                        printf("\n");
+                    }
 */
 
 
@@ -214,10 +264,21 @@ int function_b(){
     //Hash key input
     SHA256((unsigned char *)password, strlen(password), hashed_password);
 
+    // Convert computed hash to a hexadecimal string for comparison
+    char hashed_password_hex[SHA256_DIGEST_LENGTH * 2 + 1];
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
+        sprintf(hashed_password_hex + (i * 2), "%02x", hashed_password[i]);
+    }
+
     //Compare hashed key to actual key hash
-    if (strcmp(hashed_password, hashed_key) == 0 && passTrue1 == 1) {
+    if (strcmp(hashed_password_hex, hashed_key) == 0 && passTrue1 == 1) {
         passTrue2 = 1;
     }
+
+    //CORRECT PATH: encrypt the shifted password
+    unsigned char encrypted_password[128];
+    int encrypted_len = encrypt_password(password, encrypted_password, "01234567890123456789012345678901", "0123456789012345");
+
 }
 
 
@@ -225,10 +286,13 @@ int function_b(){
             Some logic checks for level 3
 */
 int function_c(){
+
+    bitshift_encrypt(encrypt_password,encrypted_len);
         // Simple password check
-    if (strcmp(password, correct_password) == 0 && passTrue1 != 1) {
+    if (strcmp(encrypted_password, correct_password) == 0 && passTrue1 != 1) {
         passTrue1 = 1;
     }
+
 }
 /*
             Final check for level 3 /payload
