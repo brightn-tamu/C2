@@ -25,7 +25,7 @@ unsigned char extracted_key[PASSWORD_LENGTH];
 // Arrays to hold the separated even and odd elements
 unsigned char reversed_evens[PASSWORD_LENGTH / 2];
 unsigned char reversed_odds[PASSWORD_LENGTH / 2];
-unsigned char password[20];
+unsigned char password[50];
 
 
 int function_a();
