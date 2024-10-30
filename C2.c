@@ -11,6 +11,22 @@
 #include <stdlib.h>
 #include <encrypt_password.c>
 
+int xor_cycle = 0;
+int SEED = 42;
+int PASSWORD_LENGTH = 6;
+int LARGE_ARRAY_LENGTH = 35;
+//Array to hold encrypted key
+unsigned char extracted_key[PASSWORD_LENGTH];
+// Arrays to hold the separated even and odd elements
+unsigned char reversed_evens[PASSWORD_LENGTH / 2];
+unsigned char reversed_odds[PASSWORD_LENGTH / 2];
+
+int function_a();
+int function_b();
+int function_c();
+int function_d();
+int array_function();
+
 // Check if Windows machine
 #if defined(_WIN32) || defined(_WIN64)
 int debugger_check() {
@@ -137,7 +153,6 @@ files
 */
 
 int main() {
-    
     //Hash for Level 2
     const char *hashed_key = "c1c224b03cd9bc7b6a86d77f5dace40191766c485cd55dc48caf9ac873335d6f";
 
@@ -180,7 +195,29 @@ int main() {
             XOR (Odd-Indexed Elements).
             Combine the transformed even and odd elements into the final format.
             Apply an Additional XOR to the combined array as a final encryption step.
-            
+            Seed key in larger psuedo-random array
+
+            Plain Key:
+            0x41, 0x64, 0x6d, 0x69, 0x6e, 0x00
+            Encrypted pre-seeded key:
+            0x45, 0x36, 0xf5, 0x54, 0x85, 0x38
+            Seeded array embedded encrypted password:
+            0x67, 0xc6, 0x69, 0x73, 0x51, 0xf5, 0x54, 0x45,
+            0x36, 0xcd, 0xba, 0x85, 0x38, 0xfb, 0xe3, 0x46,
+            0x7c, 0xc2, 0x54, 0xf8, 0x1b, 0xe8, 0xe7, 0x8d,
+            0x76, 0x5a, 0x2e, 0x63, 0x33, 0x9f, 0xc9, 0x9a,
+            0x66, 0x32, 0x0d
+
+            Constants: Seed= 42
+                       Array Length = 35
+                       Password Length = 6
+                       First XOR Key = {0x5A, 0x3B, 0x7D, 0x1E, 0xA5, 0x62};
+                       Second XOR Key = {0x4F, 0x2A, 0x5E, 0x6C, 0xA8, 0x3D};
+                       Even XOR Key = 0x3C
+                       Odd XOR Key = 0x5A
+                       Shift amount = 1
+
+
     */
     int debugger_present = debugger_check();
     int vm_present = is_vm_environment();
@@ -198,112 +235,182 @@ int main() {
     const char correct_password[] = "0ff12bb203c614375be303ce2ed0dc58";
 
     int password_check(char *correct_password) {
-    char password[20];
-    printf("Enter password: ");
-    scanf("%19s", password);
-    if (strcmp(password, correct_password) == 0) {
-        return 1;
+        char password[20];
+        printf("Enter password: ");
+        scanf("%19s", password);
+        if (strcmp(password, correct_password) == 0) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
     }
-    else {
+
+    /*          prompt and check inputs
+                Some logic for level 2 array
+                Some logic checks for level 3
+    */
+    int function_a(){
+
+        if( xor_cycle == 1) {
+            for (int i = 0; i < PASSWORD_LENGTH; i++) {
+                if (i % 2 == 0) {
+                    extracted_key[i] = reversed_evens[i / 2];
+                } else {
+                    extracted_key[i] = reversed_odds[i / 2];
+                }
+            }
+        }
+
+        // Prompt the user to enter the password
+        printf("Enter password: ");
+        scanf("%19s", password);  // Read input, limiting to 19 characters to avoid overflow
+        //CORRECT PATH: caesar shift the password input
+        caesar_cipher(password,3);
+
+        //Call next function (function_b)
+        function_b();
+
+    }
+
+    /*          check for level 2 key (if level 1 has been completed)
+                Some logic for level 2 array
+                Some logic checks for level 3
+
+                key = Admin
+                      c1c224b03cd9bc7b6a86d77f5dace40191766c485cd55dc48caf9ac873335d6f
+                      using SHA-256
+    */
+
+
+
+    int function_b(){
+
+        // Define XOR keys
+        unsigned char first_xor_key[PASSWORD_LENGTH] = {0x4F, 0x2A, 0x5E, 0x6C, 0xA8, 0x3D};
+        unsigned char second_xor_key[PASSWORD_LENGTH] = {0x5A, 0x3B, 0x7D, 0x1E, 0xA5, 0x62};
+
+        if (xor_cycle == 0) {
+            // First cycle: apply the first XOR key
+            for (int i = 0; i < PASSWORD_LENGTH; i++) {
+                extracted_key[i] = extracted_key[i] ^ first_xor_key[i % PASSWORD_LENGTH];
+            }
+
+            xor_cycle++;
+        } else if (xor_cycle == 1) {
+            // Second cycle: apply the second XOR key
+            for (int i = 0; i < PASSWORD_LENGTH; i++) {
+                extracted_key[i] = extracted_key[i] ^ second_xor_key[i % PASSWORD_LENGTH];
+            }
+
+            // At this point, decryption should be complete
+            // Optionally, you could verify the result or end the function sequence here
+            printf("Decryption process completed.\n");
+            xor_cycle++;
+        }
+
+        //Hash key input
+        SHA256((unsigned char *)password, strlen(password), hashed_password);
+
+        // Convert computed hash to a hexadecimal string for comparison
+        char hashed_password_hex[SHA256_DIGEST_LENGTH * 2 + 1];
+        for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
+            sprintf(hashed_password_hex + (i * 2), "%02x", hashed_password[i]);
+        }
+
+        //Compare hashed key to actual key hash
+        if (strcmp(hashed_password_hex, hashed_key) == 0 && passTrue1 == 1) {
+            passTrue2 = 1;
+        }
+
+        //CORRECT PATH: encrypt the shifted password
+        unsigned char encrypted_password[128];
+        int encrypted_len = encrypt_password(password, encrypted_password, "01234567890123456789012345678901", "0123456789012345");
+
+        // Move to the next function (function_c)
+        function_c();
+    }
+
+
+    /*          check for level 1 password
+                Some logic checks for level 3
+    */
+    int function_c(){
+
+        if (xor_cycle == 1) {
+            // Split extracted_key into evens and odds
+            int even_index = 0, odd_index = 0;
+            for (int i = 0; i < PASSWORD_LENGTH; i++) {
+                if (i % 2 == 0) {
+                    reversed_evens[even_index++] = extracted_key[i];
+                } else {
+                    reversed_odds[odd_index++] = extracted_key[i];
+                }
+            }
+        }
+
+
+        bitshift_encrypt(encrypt_password,encrypted_len);
+        // Simple password check
+        if (strcmp(encrypted_password, correct_password) == 0 && passTrue1 != 1) {
+            passTrue1 = 1;
+        }
+
+        //Move to next function (function_d)
+        function_d();
+    }
+    /*
+                Final check for level 3 /payload
+                call function_a
+    */
+    int function_d(){
+        unsigned char even_xor_key = 0x3C; // Define your key for even indexed elements
+        unsigned char odd_xor_key = 0x5A;   // Define your key for odd indexed elements
+
+        if(xor_cycle == 1) {
+            //XOR evens
+            for (int i = 0; i < (PASSWORD_LENGTH / 2); i++) {
+                reversed_evens[i] ^= even_xor_key;
+            }
+
+            //Shift evens
+            for (int i = 0; i < (PASSWORD_LENGTH /2); i++) {
+                reversed_evens[i] = (reversed_evens[i] >> 1) | (reversed_evens[i] << (8 - 1));
+            }
+
+            //XOR odds
+            for (int i = 0; i < (PASSWORD_LENGTH / 2); i++) {
+                reversed_odds[i] ^= odd_xor_key;
+            }
+        }
+
+        function_a();
+    }
+
+
+
+    //Does not run, is beginning of logic path to retrieve the key-
+    //should walk through the function cycle in some way (aka call function and develop through their loop)
+    int array_function(){
+        //Array setup
+        unsigned char large_array[LARGE_ARRAY_LENGTH] = {
+            0x67, 0xc6, 0x69, 0x73, 0x51, 0xf5, 0x54,
+            0x45, 0x36, 0xcd, 0xba, 0x85, 0x38, 0xfb,
+            0xe3, 0x46, 0x7c, 0xc2, 0x54, 0xf8, 0x1b,
+            0xe8, 0xe7, 0x8d, 0x76, 0x5a, 0x2e, 0x63,
+            0x33, 0x9f, 0xc9, 0x9a, 0x66, 0x32, 0x0d
+        };
+
+        //Extract the key
+        for (int j = 0; j < PASSWORD_LENGTH; j++) {
+            int position = (j ^ SEED) % LARGE_ARRAY_LENGTH;
+            extracted_key[j] = large_array[position];
+        }
+
+        function_b();
+
         return 0;
     }
-}
-
-/*          prompt and check inputs
-            Some logic for level 2 array
-            Some logic checks for level 3
-*/
-int function_a(){
-
-    // Prompt the user to enter the password
-    printf("Enter password: ");
-    scanf("%19s", password);  // Read input, limiting to 19 characters to avoid overflow
-    //CORRECT PATH: caesar shift the password input
-    caesar_cipher(password,3);
-
-}
-
-/*          check for level 2 key (if level 1 has been completed)
-            Some logic for level 2 array
-            Some logic checks for level 3
-
-            key = Admin
-                  c1c224b03cd9bc7b6a86d77f5dace40191766c485cd55dc48caf9ac873335d6f 
-                  using SHA-256
-
-            Final sorted combined array: 0x0b, 0x0e, 0x78, 0x00, 0x59, 0xfa, 0x5e,
-            0x6b, 0xeb, 0x42, 0x7f, 0x1b, 0x13, 0x67, 0xab, 0x0f, 0x1a, 0xf3, 0xcf,
-            0x13, 0xdb, 0xfd, 0x3b, 0xa4, 0x4a, 0x64, 0xca, 0xe5, 0x66, 0x45, 0x95,
-            0x03
-
-                  Binary: 
-                    Binary representation of hash:
-                    11000001 11000010 00100100 10110000 00111100 11011001 10111100 01111011 01101010 10000110 
-                    11010111 01111111 01011101 10101100 11100100 00000001 10010001 01110110 01101100 01001000 
-                    01011100 11010101 01011101 11000100 10001100 10101111 10011010 11001000 01110011 00110011 
-                    01011101 01101111 
-
-                    void print_hash_as_binary_bits(unsigned char *hash) {
-                    // Print each byte of the hash as an 8-bit binary string
-                        printf("Binary representation of hash:\n");
-                        for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
-                            for (int j = 7; j >= 0; j--) {
-                                printf("%d", (hash[i] >> j) & 1);  // Extract each bit
-                            }
-                            printf(" ");  // Separate bytes with a space for readability
-                        }
-                        printf("\n");
-                    }
-*/
-
-
-int function_b(){
-    //Hash key input
-    SHA256((unsigned char *)password, strlen(password), hashed_password);
-
-    // Convert computed hash to a hexadecimal string for comparison
-    char hashed_password_hex[SHA256_DIGEST_LENGTH * 2 + 1];
-    for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
-        sprintf(hashed_password_hex + (i * 2), "%02x", hashed_password[i]);
-    }
-
-    //Compare hashed key to actual key hash
-    if (strcmp(hashed_password_hex, hashed_key) == 0 && passTrue1 == 1) {
-        passTrue2 = 1;
-    }
-
-    //CORRECT PATH: encrypt the shifted password
-    unsigned char encrypted_password[128];
-    int encrypted_len = encrypt_password(password, encrypted_password, "01234567890123456789012345678901", "0123456789012345");
-
-}
-
-
-/*          check for level 1 password 
-            Some logic checks for level 3
-*/
-int function_c(){
-
-    bitshift_encrypt(encrypt_password,encrypted_len);
-        // Simple password check
-    if (strcmp(encrypted_password, correct_password) == 0 && passTrue1 != 1) {
-        passTrue1 = 1;
-    }
-
-}
-/*
-            Final check for level 3 /payload
-            call function_a
-*/
-int function_d(){
-
-}
-
-
-//Does not run, is beginning of logic path to retrieve the key- 
-//should walk through the function cycle in some way (aka call function and develop through their loop)
-int array_function() {
-
 }
 
 
