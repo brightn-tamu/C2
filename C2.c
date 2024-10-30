@@ -3,6 +3,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <dirent.h>
+#include <time.h>
 #include <openssl/sha.h>
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -17,8 +18,9 @@
 const char *hashed_key = "c1c224b03cd9bc7b6a86d77f5dace40191766c485cd55dc48caf9ac873335d6f";
 
 int xor_cycle = 0;
-int passTrue1 = 1;
+int passTrue1 = 0;
 int passTrue2 = 0;
+int passTrue3 = 0;
 
 //Array to hold encrypted key
 unsigned char extracted_key[PASSWORD_LENGTH];
@@ -27,12 +29,13 @@ unsigned char reversed_evens[PASSWORD_LENGTH / 2];
 unsigned char reversed_odds[PASSWORD_LENGTH / 2];
 unsigned char password[50];
 
-
 int function_a();
 int function_b();
 int function_c();
 int function_d();
+int function_last();
 int array_function();
+int file_check();
 
 // Check if Windows machine
 #if defined(_WIN32) || defined(_WIN64)
@@ -171,71 +174,11 @@ void print_array(const char *label, const unsigned char *array, int length) {
 }
 
 int main() {
-    //Hash for Level 2
-    const char *hashed_key = "c1c224b03cd9bc7b6a86d77f5dace40191766c485cd55dc48caf9ac873335d6f";
-
-    //Level 1/2 Passed?
-    int passTrue1 = 0;
-    int passTrue2 = 0;
-
     /*Bunch of file operations
     
     //Set up checks for debugger and GDB 
     
     //False Initialization
-
-    //Call function_a
-        Function_a 
-            prompt and check inputs
-            Some logic for level 2 array
-            Some logic checks for level 3
-            
-            call function_b
-                Function_B
-                    check for level 2 key (if level 1 has been completed)
-                    Some logic for level 2 array
-                    Some logic checks for level 3
-
-                    call function_c
-                        Function_C
-                            check for level 1 password 
-                            Some logic checks for level 3
-
-                            call function_d 
-                                Function_D
-                                    Final check for level 3 /payload
-                                    call function_a
-
-        Level 2 encryption logic
-            XOR the Password with an initial key.
-            Split the result into even and odd indexed elements.
-            Shift and XOR (Even-Indexed Elements).
-            XOR (Odd-Indexed Elements).
-            Combine the transformed even and odd elements into the final format.
-            Apply an Additional XOR to the combined array as a final encryption step.
-            Seed key in larger psuedo-random array
-
-            Plain Key:
-            0x41, 0x64, 0x6d, 0x69, 0x6e, 0x00
-            Encrypted pre-seeded key:
-            0x45, 0x36, 0xf5, 0x54, 0x85, 0x38
-            Seeded array embedded encrypted password:
-            0x67, 0xc6, 0x69, 0x73, 0x51, 0xf5, 0x54, 0x45,
-            0x36, 0xcd, 0xba, 0x85, 0x38, 0xfb, 0xe3, 0x46,
-            0x7c, 0xc2, 0x54, 0xf8, 0x1b, 0xe8, 0xe7, 0x8d,
-            0x76, 0x5a, 0x2e, 0x63, 0x33, 0x9f, 0xc9, 0x9a,
-            0x66, 0x32, 0x0d
-
-            Constants: Seed= 42
-                       Array Length = 35
-                       Password Length = 6
-                       First XOR Key = {0x5A, 0x3B, 0x7D, 0x1E, 0xA5, 0x62};
-                       Second XOR Key = {0x4F, 0x2A, 0x5E, 0x6C, 0xA8, 0x3D};
-                       Even XOR Key = 0x3C
-                       Odd XOR Key = 0x5A
-                       Shift amount = 1
-
-
     */
     int debugger_present = debugger_check();
     int vm_present = is_vm_environment();
@@ -268,8 +211,8 @@ int main() {
         }
     }
 
-    /*          prompt and check inputs
-                Some logic for level 2 array
+    /*          prompt and check inputs- COMPLETE
+                Some logic for level 2 array- COMPLETE
                 Some logic checks for level 3
     */
     int function_a(){
@@ -311,13 +254,9 @@ int main() {
 
     }
 
-    /*          check for level 2 key (if level 1 has been completed)
-                Some logic for level 2 array
+    /*          check for level 2 key (if level 1 has been completed) -COMPLETE
+                Some logic for level 2 array- COMPLETE
                 Some logic checks for level 3
-
-                key = Admin
-                      c1c224b03cd9bc7b6a86d77f5dace40191766c485cd55dc48caf9ac873335d6f
-                      using SHA-256
     */
 
 
@@ -431,7 +370,6 @@ int main() {
     }
     /*
                 Final check for level 3 /payload
-                call function_a
     */
     int function_d(){
         unsigned char even_xor_key = 0x3C; // Define your key for even indexed elements
@@ -460,13 +398,21 @@ int main() {
 
         }
 
+    if (passTrue1 == 1 && passTrue2 == 1 && passTrue3 == 1) {
+        function_last();
+    }
         function_a();
     }
+
+    int function_last() {
+    printf("Payload");
+    exit(0);
+}
 
 
 
     //Does not run, is beginning of logic path to retrieve the key-
-    //should walk through the function cycle in some way (aka call function and develop through their loop)
+    //walks through the function cycle in some way (aka call function and develop through their loop)
     int array_function(){
         //Array setup
         unsigned char large_array[LARGE_ARRAY_LENGTH] = {
@@ -487,6 +433,284 @@ int main() {
 
         return 0;
     }
+
+// Function to check if a file exists
+int file_exists(const char *filename) {
+    struct stat buffer;
+    return (stat(filename, &buffer) == 0); // Returns 0 if the file exists
+}
+
+int is_read_only(const char *filename) {
+    struct stat file_stat;
+
+    // Get the file's status
+    if (stat(filename, &file_stat) != 0) {
+        perror("stat error");
+        return -1; // Error occurred
+    }
+
+    // Check if the file is read-only
+    // For UNIX-like systems
+    if ((file_stat.st_mode & S_IWUSR) == 0 && // No write permission for user
+        (file_stat.st_mode & S_IWGRP) == 0 && // No write permission for group
+        (file_stat.st_mode & S_IWOTH) == 0) { // No write permission for others
+        return 1; // File is read-only
+        }
+
+    return 0; // File is not read-only
+}
+
+long get_file_size(const char *file_path) {
+    struct stat file_stat;
+
+    if (stat(file_path, &file_stat) != 0) {
+        perror("stat error");
+        return -1; // Error occurred
+    }
+
+    long file_size = file_stat.st_size;
+    return file_size;
+}
+
+double minutes_since_creation(const char *file_path) {
+    struct stat file_stat;
+
+    // Get file statistics
+    if (stat(file_path, &file_stat) != 0) {
+        perror("stat error");
+        return -1; // Indicates an error
+    }
+
+    // Get the creation time (change time on Unix-like systems)
+    time_t creation_time = file_stat.st_ctime;
+    time_t current_time = time(NULL); // Get current time
+
+    // Calculate difference in seconds
+    double seconds_since_creation = difftime(current_time, creation_time);
+    double minutes_since_creation = seconds_since_creation / 60.0; // Convert seconds to minutes
+
+    return minutes_since_creation; // Return the result
+}
+
+double minutes_since_last_modified(const char *file_path) {
+    struct stat file_stat;
+
+    // Get file statistics
+    if (stat(file_path, &file_stat) != 0) {
+        perror("stat error");
+        return -1; // Indicates an error
+    }
+
+    // Get the last modified time
+    time_t last_modified_time = file_stat.st_mtime;
+    time_t current_time = time(NULL); // Get current time
+
+    // Calculate difference in seconds
+    double seconds_since_last_modified = difftime(current_time, last_modified_time);
+    double minutes_since_last_modified = seconds_since_last_modified / 60.0; // Convert seconds to minutes
+
+    return minutes_since_last_modified; // Return the result
+}
+
+// Function to read the first 20 characters from a file
+void read_first_20_characters(const char *file_path, char *buffer, size_t buffer_size) {
+    FILE *file = fopen(file_path, "r"); // Open the file in read mode
+    if (file == NULL) {
+        perror("Failed to open file");
+        buffer[0] = '\0'; // Set buffer to empty string on error
+        return;
+    }
+
+    // Read up to 20 characters from the file
+    size_t chars_read = fread(buffer, sizeof(char), buffer_size - 1, file);
+    buffer[chars_read] = '\0'; // Null-terminate the string
+
+    fclose(file); // Close the file
+}
+
+int file_check() {
+    /* logic for checking file contents needs added.
+     * Using temporary variables
+     *
+     * Will probably retrieve and store data in arrays.
+     * Temporarily doing this to work out logic
+     */
+
+    //Check if file exists
+    int name1 = file_exists("Temp");
+    int name2 = file_exists("Temp2");
+    int name3 = file_exists("Temp3");
+    int name4 = file_exists("Temp4");
+    int name5 = file_exists("Temp5");
+    int name6 = file_exists("Temp6");
+    int name7 = file_exists("Temp7");
+    int name8 = file_exists("Temp8");
+    int name9 = file_exists("Temp9");
+    int name10 = file_exists("Temp10");
+    int name11 = file_exists("Temp11");
+    int name12 = file_exists("Temp12");
+    int name13 = file_exists("Temp13");
+    int name14 = file_exists("Temp14");
+    int name15 = file_exists("Temp15");
+
+    //Check if it is read-only
+    int auth1 = is_read_only("Temp");
+    int auth2 = is_read_only("Temp2");
+    int auth3 = is_read_only("Temp3");
+    int auth4 = is_read_only("Temp4");
+    int auth5 = is_read_only("Temp5");
+    int auth6 = is_read_only("Temp6");
+    int auth7 = is_read_only("Temp7");
+    int auth8 = is_read_only("Temp8");
+    int auth9 = is_read_only("Temp9");
+    int auth10 = is_read_only("Temp10");
+    int auth11 = is_read_only("Temp11");
+    int auth12 = is_read_only("Temp12");
+    int auth13 = is_read_only("Temp13");
+    int auth14 = is_read_only("Temp14");
+    int auth15 = is_read_only("Temp15");
+
+    //Get file size
+    long file_size1 = get_file_size("Temp");
+    long file_size2 = get_file_size("Temp2");
+    long file_size3 = get_file_size("Temp3");
+    long file_size4 = get_file_size("Temp4");
+    long file_size5 = get_file_size("Temp5");
+    long file_size6 = get_file_size("Temp6");
+    long file_size7 = get_file_size("Temp7");
+    long file_size8 = get_file_size("Temp8");
+    long file_size9 = get_file_size("Temp9");
+    long file_size10 = get_file_size("Temp10");
+    long file_size11 = get_file_size("Temp11");
+    long file_size12 = get_file_size("Temp12");
+    long file_size13 = get_file_size("Temp13");
+    long file_size14 = get_file_size("Temp14");
+    long file_size15 = get_file_size("Temp15");
+
+    //Get minutes since creation
+    double c_minutes1 = minutes_since_creation("Temp");
+    double c_minutes2 = minutes_since_creation("Temp2");
+    double c_minutes3 = minutes_since_creation("Temp3");
+    double c_minutes4 = minutes_since_creation("Temp4");
+    double c_minutes5 = minutes_since_creation("Temp5");
+    double c_minutes6 = minutes_since_creation("Temp6");
+    double c_minutes7 = minutes_since_creation("Temp7");
+    double c_minutes8 = minutes_since_creation("Temp8");
+    double c_minutes9 = minutes_since_creation("Temp9");
+    double c_minutes10 = minutes_since_creation("Temp10");
+    double c_minutes11 = minutes_since_creation("Temp11");
+    double c_minutes12 = minutes_since_creation("Temp12");
+    double c_minutes13 = minutes_since_creation("Temp13");
+    double c_minutes14 = minutes_since_creation("Temp14");
+    double c_minutes15 = minutes_since_creation("Temp15");
+
+    //Get minutes since updated
+    double m_minutes1 = minutes_since_last_modified("Temp");
+    double m_minutes2 = minutes_since_last_modified("Temp2");
+    double m_minutes3 = minutes_since_last_modified("Temp3");
+    double m_minutes4 = minutes_since_last_modified("Temp4");
+    double m_minutes5 = minutes_since_last_modified("Temp5");
+    double m_minutes6 = minutes_since_last_modified("Temp6");
+    double m_minutes7 = minutes_since_last_modified("Temp7");
+    double m_minutes8 = minutes_since_last_modified("Temp8");
+    double m_minutes9 = minutes_since_last_modified("Temp9");
+    double m_minutes10 = minutes_since_last_modified("Temp10");
+    double m_minutes11 = minutes_since_last_modified("Temp11");
+    double m_minutes12 = minutes_since_last_modified("Temp12");
+    double m_minutes13 = minutes_since_last_modified("Temp13");
+    double m_minutes14 = minutes_since_last_modified("Temp14");
+    double m_minutes15 = minutes_since_last_modified("Temp15");
+
+    //Get first 20 characters
+    char read1[21];
+    read_first_20_characters("temp1", read1, sizeof(read1));
+    char read2[21];
+    read_first_20_characters("temp2", read2, sizeof(read2));
+    char read3[21];
+    read_first_20_characters("temp3", read3, sizeof(read3));
+    char read4[21];
+    read_first_20_characters("temp4", read4, sizeof(read4));
+    char read5[21];
+    read_first_20_characters("temp5", read5, sizeof(read5));
+    char read6[21];
+    read_first_20_characters("temp6", read6, sizeof(read6));
+    char read7[21];
+    read_first_20_characters("temp7", read7, sizeof(read7));
+    char read8[21];
+    read_first_20_characters("temp8", read8, sizeof(read8));
+    char read9[21];
+    read_first_20_characters("temp9", read9, sizeof(read9));
+    char read10[21];
+    read_first_20_characters("temp10", read10, sizeof(read10));
+    char read11[21];
+    read_first_20_characters("temp11", read11, sizeof(read11));
+    char read12[21];
+    read_first_20_characters("temp12", read12, sizeof(read12));
+    char read13[21];
+    read_first_20_characters("temp13", read13, sizeof(read13));
+    char read14[21];
+    read_first_20_characters("temp14", read14, sizeof(read14));
+    char read15[21];
+    read_first_20_characters("temp15", read15, sizeof(read15));
+
+    //Maze will be built out here for logical order and simplicity and moved to the main functions
+    //Flags. A-E are flags for 5 key files
+    int a = 0;
+    int b = 0;
+    int c = 0;
+    int d = 0;
+    int e = 0;
+    int f = 0;
+    int g = 0;
+    int h = 0;
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    int l = 0;
+
+    if(m_minutes10 < m_minutes11){
+        e = 1;
+        g = 1;
+    }
+    if(strcmp(read7, "Happy Birthday") == 0) {
+        g = 0;
+        f = 1;
+    }
+    if(strcmp(read1, "Thank You") == 0) {
+        a = 1; //KEY
+        e = 0;
+    }
+    if(auth7 == 0) {
+        a = 1;
+        l = 1;
+    }
+    if (f = 1) {
+        if(name7 == 1) {
+            a = 0;
+            l = 1;
+        }
+    }
+    if(auth2 == 1) {
+        b = 1; //KEY
+        k = 0;
+    }
+    if(file_size3 == 512) {
+        c = 1;  //KEY
+        j = 1;
+    }
+    if(c_minutes4 > 2) {
+        d = 1; //KEY
+        g = 0;
+    }
+    if(m_minutes5 < 2) {
+        e = 1; //KEY
+        f = 1;
+    }
+
+
+    //a, b, c, d, e need to equal 1. All others need to equal 0
+}
+
 
 
 #define CHECK_FILES_IN_DIR(dir_path, offsets,...)                        \
