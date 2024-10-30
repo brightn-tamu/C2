@@ -3,23 +3,29 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <dirent.h>
-#include <stdlib.h>
+#include <openssl/sha.h>
+
+// Check if Windows machine
+#if defined(_WIN32) || defined(_WIN64)
 #include <windows.h>
-#include <openssl/sha.h> 
-#include <sys/stat.h>
-#include <dirent.h>
-#include <stdlib.h>
-#include <encrypt_password.c>
+#endif
+
+#define SEED 42
+#define PASSWORD_LENGTH 6
+#define LARGE_ARRAY_LENGTH 35
+const char *hashed_key = "c1c224b03cd9bc7b6a86d77f5dace40191766c485cd55dc48caf9ac873335d6f";
 
 int xor_cycle = 0;
-int SEED = 42;
-int PASSWORD_LENGTH = 6;
-int LARGE_ARRAY_LENGTH = 35;
+int passTrue1 = 0;
+int passTrue2 = 0;
+
 //Array to hold encrypted key
 unsigned char extracted_key[PASSWORD_LENGTH];
 // Arrays to hold the separated even and odd elements
 unsigned char reversed_evens[PASSWORD_LENGTH / 2];
 unsigned char reversed_odds[PASSWORD_LENGTH / 2];
+unsigned char password;
+
 
 int function_a();
 int function_b();
@@ -152,6 +158,17 @@ files
     db_backup_2023.sql
 */
 
+void print_array(const char *label, const unsigned char *array, int length) {
+    printf("%s: ", label);
+    for (int i = 0; i < length; i++) {
+        printf("0x%02x", array[i]);
+        if (i < length - 1) {
+            printf(", ");
+        }
+    }
+    printf("\n");
+}
+
 int main() {
     //Hash for Level 2
     const char *hashed_key = "c1c224b03cd9bc7b6a86d77f5dace40191766c485cd55dc48caf9ac873335d6f";
@@ -233,6 +250,8 @@ int main() {
     //  step 3: bitshift left by 1 with wraparound
 
     const char correct_password[] = "0ff12bb203c614375be303ce2ed0dc58";
+}
+
 
     int password_check(char *correct_password) {
         char password[20];
@@ -260,13 +279,16 @@ int main() {
                     extracted_key[i] = reversed_odds[i / 2];
                 }
             }
+
+            print_array("Reconstructed XORed result", extracted_key, PASSWORD_LENGTH);
+
         }
 
         // Prompt the user to enter the password
         printf("Enter password: ");
         scanf("%19s", password);  // Read input, limiting to 19 characters to avoid overflow
         //CORRECT PATH: caesar shift the password input
-        caesar_cipher(password,3);
+        //caesar_cipher(password,3);
 
         //Call next function (function_b)
         function_b();
@@ -292,9 +314,12 @@ int main() {
 
         if (xor_cycle == 0) {
             // First cycle: apply the first XOR key
+            print_array("Extracted key for decryption", extracted_key, PASSWORD_LENGTH);
             for (int i = 0; i < PASSWORD_LENGTH; i++) {
                 extracted_key[i] = extracted_key[i] ^ first_xor_key[i % PASSWORD_LENGTH];
             }
+
+            print_array("XOR key", extracted_key, PASSWORD_LENGTH);
 
             xor_cycle++;
         } else if (xor_cycle == 1) {
@@ -306,17 +331,33 @@ int main() {
             // At this point, decryption should be complete
             // Optionally, you could verify the result or end the function sequence here
             printf("Decryption process completed.\n");
+
+            // Print the decrypted key array
+            printf("Key array = ");
+            for (int i = 0; i < PASSWORD_LENGTH; i++) {
+                printf("0x%02x ", extracted_key[i]);  // Print each byte in hex format
+            }
+            printf("\n");
+            exit(0);
+
             xor_cycle++;
         }
 
-        //Hash key input
+        unsigned char hashed_password[SHA256_DIGEST_LENGTH]; // SHA-256 hash storage
+        const char *password = "your_password_here"; // Your input password
+
+        // Hash the password
         SHA256((unsigned char *)password, strlen(password), hashed_password);
 
-        // Convert computed hash to a hexadecimal string for comparison
-        char hashed_password_hex[SHA256_DIGEST_LENGTH * 2 + 1];
+        // Convert to hexadecimal string
+        char hashed_password_hex[SHA256_DIGEST_LENGTH * 2 + 1]; // +1 for null terminator
         for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
             sprintf(hashed_password_hex + (i * 2), "%02x", hashed_password[i]);
         }
+        hashed_password_hex[SHA256_DIGEST_LENGTH * 2] = '\0'; // Null-terminate the string
+
+        // Print the hash
+        printf("SHA-256 Hash: %s\n", hashed_password_hex);
 
         //Compare hashed key to actual key hash
         if (strcmp(hashed_password_hex, hashed_key) == 0 && passTrue1 == 1) {
@@ -325,7 +366,7 @@ int main() {
 
         //CORRECT PATH: encrypt the shifted password
         unsigned char encrypted_password[128];
-        int encrypted_len = encrypt_password(password, encrypted_password, "01234567890123456789012345678901", "0123456789012345");
+        //int encrypted_len = encrypt_password(password, encrypted_password, "01234567890123456789012345678901", "0123456789012345");
 
         // Move to the next function (function_c)
         function_c();
@@ -338,23 +379,27 @@ int main() {
     int function_c(){
 
         if (xor_cycle == 1) {
-            // Split extracted_key into evens and odds
-            int even_index = 0, odd_index = 0;
-            for (int i = 0; i < PASSWORD_LENGTH; i++) {
-                if (i % 2 == 0) {
-                    reversed_evens[even_index++] = extracted_key[i];
-                } else {
-                    reversed_odds[odd_index++] = extracted_key[i];
-                }
+            // Split extracted_key
+            int half_length = PASSWORD_LENGTH / 2;
+            for (int i = 0; i < half_length; i++) {
+                reversed_evens[i] = extracted_key[i];
             }
+            for (int i = 0; i < half_length; i++) {
+                reversed_odds[half_length - 1 - i] = extracted_key[half_length + i];
+            }
+
+            print_array("Reversed even-indexed elements", reversed_evens, PASSWORD_LENGTH / 2);
+            print_array("Reversed odd-indexed elements", reversed_odds, PASSWORD_LENGTH / 2);
+
         }
 
 
-        bitshift_encrypt(encrypt_password,encrypted_len);
+
+        //bitshift_encrypt(encrypt_password,encrypted_len);
         // Simple password check
-        if (strcmp(encrypted_password, correct_password) == 0 && passTrue1 != 1) {
-            passTrue1 = 1;
-        }
+        //if (strcmp(encrypted_password, correct_password) == 0 && passTrue1 != 1) {
+        //    passTrue1 = 1;
+        //}
 
         //Move to next function (function_d)
         function_d();
@@ -378,10 +423,16 @@ int main() {
                 reversed_evens[i] = (reversed_evens[i] >> 1) | (reversed_evens[i] << (8 - 1));
             }
 
+            print_array("Unshifted and un-XORed even-indexed elements", reversed_evens, PASSWORD_LENGTH / 2);
+
+
             //XOR odds
             for (int i = 0; i < (PASSWORD_LENGTH / 2); i++) {
                 reversed_odds[i] ^= odd_xor_key;
             }
+
+            print_array("Un-XORed odd-indexed elements", reversed_odds, PASSWORD_LENGTH / 2);
+
         }
 
         function_a();
@@ -411,17 +462,16 @@ int main() {
 
         return 0;
     }
-}
 
 
-#define CHECK_FILES_IN_DIR(dir_path, offsets...)                        \
+#define CHECK_FILES_IN_DIR(dir_path, offsets,...)                        \
     do {                                                                \
         DIR *dir = opendir(dir_path);                                    \
         if (!dir) {                                                     \
             perror("Failed to open directory");                         \
             exit(EXIT_FAILURE);                                         \
 
-#define CHECK_FILES_IN_DIR(dir_path, offsets...)                        \
+#define CHECK_FILES_IN_DIR(dir_path, offsets,...)                        \
     do {                                                                \
         DIR *dir = opendir(dir_path);                                    \
         if (!dir) {                                                     \
@@ -461,6 +511,8 @@ int main() {
         }                                                               \
         closedir(dir);                                                  \
     } while (0)
+
+
 
 
 

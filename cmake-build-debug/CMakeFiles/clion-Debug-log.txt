@@ -1,10 +1,12 @@
 "C:\Users\brigh\AppData\Local\JetBrains\CLion 2024.2.2\bin\cmake\win\x64\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug "-DCMAKE_MAKE_PROGRAM=C:/Users/brigh/AppData/Local/JetBrains/CLion 2024.2.2/bin/ninja/win/x64/ninja.exe" -G Ninja -S C:\Users\brigh\CLionProjects\C2\C2 -B C:\Users\brigh\CLionProjects\C2\C2\cmake-build-debug
--- The C compiler identification is GNU 13.1.0
--- Detecting C compiler ABI info
--- Detecting C compiler ABI info - done
--- Check for working C compiler: C:/Users/brigh/AppData/Local/JetBrains/CLion 2024.2.2/bin/mingw/bin/gcc.exe - skipped
--- Detecting C compile features
--- Detecting C compile features - done
--- Configuring done (2.6s)
--- Generating done (0.0s)
--- Build files have been written to: C:/Users/brigh/CLionProjects/C2/C2/cmake-build-debug
+CMake Error at C:/Users/brigh/AppData/Local/JetBrains/CLion 2024.2.2/bin/cmake/win/x64/share/cmake-3.29/Modules/FindPackageHandleStandardArgs.cmake:230 (message):
+  Could NOT find OpenSSL, try to set the path to OpenSSL root folder in the
+  system variable OPENSSL_ROOT_DIR (missing: OPENSSL_CRYPTO_LIBRARY) (found
+  version "3.4.0")
+Call Stack (most recent call first):
+  C:/Users/brigh/AppData/Local/JetBrains/CLion 2024.2.2/bin/cmake/win/x64/share/cmake-3.29/Modules/FindPackageHandleStandardArgs.cmake:600 (_FPHSA_FAILURE_MESSAGE)
+  C:/Users/brigh/AppData/Local/JetBrains/CLion 2024.2.2/bin/cmake/win/x64/share/cmake-3.29/Modules/FindOpenSSL.cmake:686 (find_package_handle_standard_args)
+  CMakeLists.txt:15 (find_package)
+
+
+-- Configuring incomplete, errors occurred!
