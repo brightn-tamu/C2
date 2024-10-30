@@ -5,9 +5,10 @@
 #include <dirent.h>
 #include <openssl/sha.h>
 
-// Check if Windows machine
 #if defined(_WIN32) || defined(_WIN64)
 #include <windows.h>
+#else
+#include <unistd.h>  // Use for Unix-based systems
 #endif
 
 #define SEED 42
@@ -16,7 +17,7 @@
 const char *hashed_key = "c1c224b03cd9bc7b6a86d77f5dace40191766c485cd55dc48caf9ac873335d6f";
 
 int xor_cycle = 0;
-int passTrue1 = 0;
+int passTrue1 = 1;
 int passTrue2 = 0;
 
 //Array to hold encrypted key
@@ -24,7 +25,7 @@ unsigned char extracted_key[PASSWORD_LENGTH];
 // Arrays to hold the separated even and odd elements
 unsigned char reversed_evens[PASSWORD_LENGTH / 2];
 unsigned char reversed_odds[PASSWORD_LENGTH / 2];
-unsigned char password;
+unsigned char password[20];
 
 
 int function_a();
@@ -250,6 +251,8 @@ int main() {
     //  step 3: bitshift left by 1 with wraparound
 
     const char correct_password[] = "0ff12bb203c614375be303ce2ed0dc58";
+
+    function_a();
 }
 
 
@@ -285,8 +288,21 @@ int main() {
         }
 
         // Prompt the user to enter the password
+        #if defined(_WIN32) || defined(_WIN64)
+            Sleep(100);  // Sleep for 100 milliseconds on Windows
+        #else
+            sleep(1);  // Sleep for 1 second on Unix-based systems
+        #endif
+
+        //Works like shit 👍
         printf("Enter password: ");
+        fflush(stdout);
+        fflush(stdin);
         scanf("%19s", password);  // Read input, limiting to 19 characters to avoid overflow
+        while (getchar() != '\n')
+            continue;
+
+
         //CORRECT PATH: caesar shift the password input
         //caesar_cipher(password,3);
 
@@ -313,15 +329,17 @@ int main() {
         unsigned char second_xor_key[PASSWORD_LENGTH] = {0x5A, 0x3B, 0x7D, 0x1E, 0xA5, 0x62};
 
         if (xor_cycle == 0) {
-            // First cycle: apply the first XOR key
-            print_array("Extracted key for decryption", extracted_key, PASSWORD_LENGTH);
-            for (int i = 0; i < PASSWORD_LENGTH; i++) {
-                extracted_key[i] = extracted_key[i] ^ first_xor_key[i % PASSWORD_LENGTH];
+            if (extracted_key[0] != 0) {
+                // First cycle: apply the first XOR key
+                print_array("Extracted key for decryption", extracted_key, PASSWORD_LENGTH);
+                for (int i = 0; i < PASSWORD_LENGTH; i++) {
+                    extracted_key[i] = extracted_key[i] ^ first_xor_key[i % PASSWORD_LENGTH];
+                }
+
+                print_array("XOR key", extracted_key, PASSWORD_LENGTH);
+
+                xor_cycle++;
             }
-
-            print_array("XOR key", extracted_key, PASSWORD_LENGTH);
-
-            xor_cycle++;
         } else if (xor_cycle == 1) {
             // Second cycle: apply the second XOR key
             for (int i = 0; i < PASSWORD_LENGTH; i++) {
@@ -338,30 +356,37 @@ int main() {
                 printf("0x%02x ", extracted_key[i]);  // Print each byte in hex format
             }
             printf("\n");
-            exit(0);
 
             xor_cycle++;
         }
 
-        unsigned char hashed_password[SHA256_DIGEST_LENGTH]; // SHA-256 hash storage
-        const char *password = "your_password_here"; // Your input password
+        printf("Starting password hashing\n");
+        unsigned char user_hashed_key[SHA256_DIGEST_LENGTH]; // SHA-256 hash storage
 
         // Hash the password
-        SHA256((unsigned char *)password, strlen(password), hashed_password);
+        SHA256((unsigned char *)password, strlen(password), user_hashed_key);
+        printf(" password hashed\n");
+
 
         // Convert to hexadecimal string
-        char hashed_password_hex[SHA256_DIGEST_LENGTH * 2 + 1]; // +1 for null terminator
+        char hashed_key_hex[SHA256_DIGEST_LENGTH * 2 + 1]; // +1 for null terminator
         for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
-            sprintf(hashed_password_hex + (i * 2), "%02x", hashed_password[i]);
+            sprintf(hashed_key_hex + (i * 2), "%02x", user_hashed_key[i]);
         }
-        hashed_password_hex[SHA256_DIGEST_LENGTH * 2] = '\0'; // Null-terminate the string
+        hashed_key_hex[SHA256_DIGEST_LENGTH * 2] = '\0'; // Null-terminate the string
 
         // Print the hash
-        printf("SHA-256 Hash: %s\n", hashed_password_hex);
+        printf("Password Input: %s\n", password);
+        printf("SHA-256 Hash: %s\n", hashed_key_hex);
+        printf("User SHA-256 Hash: %s\n", hashed_key);
 
         //Compare hashed key to actual key hash
-        if (strcmp(hashed_password_hex, hashed_key) == 0 && passTrue1 == 1) {
+        if (strcmp(hashed_key_hex, hashed_key) == 0 && passTrue1 == 1) {
             passTrue2 = 1;
+            printf("Hash matches\n");
+        }
+        else {
+            printf("Hash doesn't match\n");
         }
 
         //CORRECT PATH: encrypt the shifted password
