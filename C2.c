@@ -15,6 +15,7 @@
 #define SEED 42
 #define PASSWORD_LENGTH 6
 #define LARGE_ARRAY_LENGTH 35
+#define FLAG_COUNT 20
 const char *hashed_key = "c1c224b03cd9bc7b6a86d77f5dace40191766c485cd55dc48caf9ac873335d6f";
 
 int xor_cycle = 0;
@@ -29,6 +30,12 @@ unsigned char extracted_key[PASSWORD_LENGTH];
 unsigned char reversed_evens[PASSWORD_LENGTH / 2];
 unsigned char reversed_odds[PASSWORD_LENGTH / 2];
 unsigned char password[50];
+
+//Level-3 Array
+int flags[FLAG_COUNT] = {0};
+
+//Cycle key
+int A[FLAG_COUNT] = {-1,1,-1,1,-1,1,-1,-1,1,1,1,1,1,1,-1,-1,1,1,1,1};
 
 int function_a();
 int function_b();
@@ -655,429 +662,419 @@ int file_check() {
     read_first_20_characters("temp15", read15, sizeof(read15));
 
     //Maze will be built out here for logical order and simplicity and moved to the main functions
-    //Flags. A-J are flags for 1st cycle
-    int a = 0; //1
-    int b = 0; //2
-    int c = 0; //3
-    int d = 0; //4
-    int e = 0; //5
-    int f = 0; //6
-    int g = 0; //7
-    int h = 0; //8
-    int i = 0; //9
-    int j = 0; //10
-
-    // Flags k-t are for second cycle
-    int k = 0; //1
-    int l = 0; //2
-    int m = 0; //3
-    int n = 0; //4
-    int o = 0; //5
-    int p = 0; //6
-    int q = 0; //7
-    int r = 0; //8
-    int s = 0; //9
-    int t = 0; //10
-
-    //Cycle keys
-    int A[10] = {-1,1,-1,1,-1,1,-1,-1,1,1};
-    int B[10] = {-1,1,1,1,1,1,-1,-1,1,-1};
 
     //Cycle 1 Logic Comparisons
     //B1
-    if() {
-        if(cycle = 1) {
-            a = -1; //1
-            c = 1; //3
-            d = 1; //4
-        }
-        if(cycle = 2) {
-            k = -1; //1
-            m = 1; //3
-            n = 1; //4
-        }
+    if(cycle == 1 && ) {
+        flags[0] = -1; //1
+        flags[2] = 1; //3
+        flags[3] = 1; //4
+
     }
     //B2
-    if() {
-        if(cycle = 1) {
-            a = -1;  //1
-            d = 1;  //4
-            e = 1;  //5
-        }
-        if (cycle = 2) {
-            k = -1; //1
-            n = 1; //4
-            o = 1; //5
-        }
+    if(cycle == 1 && ) {
+        flags[0] = -1;  //1
+        flags[3] = 1;  //4
+        flags[4] = 1;  //5
     }
     //B3
-    if() {
-        if(cycle = 1) {
-            b = 1; //2
-            g = 1; //7
-            i = 1; //9
-        }
-        if(cycle = 2) {
-            l = 1; //2
-            q = 1; //7
-            s = 1; //9
-        }
+    if(cycle == 1 && ) {
+        flags[1] = 1; //2
+        flags[6] = 1; //7
+        flags[8] = 1; //9
     }
     //B4
-    if() {
-        if(cycle = 1) {
-            c = 1; //3
-            f = 1; //6
-            g = -1; //7
-        }
-        if(cycle = 2) {
-            m = 1; //3
-            p = 1; //6
-            q = -1; //7
-        }
+    if(cycle == 1 && ) {
+        flags[2] = 1; //3
+        flags[5] = 1; //6
+        flags[6] = -1; //7
     }
     //B5
-    if() {
-        if(cycle = 1) {
-            b = 1; //2
-            i = -1; //9
-            j = 1; //10
-        }
-        if(cycle = 2) {
-            l = 1; //2
-            s = -1; //9
-            t = 1; //10
-        }
+    if(cycle == 1 && ) {
+        flags[1] = 1; //2
+        flags[8] = -1; //9
+        flags[9] = 1; //10
     }
     //B6
-    if() {
-        if(cycle = 1) {
-            a = 1; //1
-            d = 1; //4
-            f = -1; //6
-        }
-        if(cycle = 2) {
-            k = 1; //1
-            n = 1; //4
-            p = -1; //6
-        }
+    if(cycle == 1 && ) {
+        flags[0] = 1; //1
+        flags[3] = 1; //4
+        flags[5] = -1; //6
     }
     //B7
-    if() {
-        if(cycle = 1) {
-            b = -1; //2
-            e = 1; //5
-            j = 1; //10
-        }
-        if(cycle = 2) {
-            l = -1; //2
-            o = 1; //5
-            t = 1; //10
-        }
+    if(cycle == 1 && ) {
+        flags[1] = -1; //2
+        flags[4] = 1; //5
+        flags[9] = 1; //10
     }
     //B8
-    if() {
-        if(cycle = 1) {
-            a = -1; //1
-            c = 1; //3
-            d = 1; //4
-        }
-        if(cycle = 2) {
-            k = -1; //1
-            m = 1; //3
-            n = 1; //4
-        }
+    if(cycle == 1 && ) {
+        flags[0] = -1; //1
+        flags[2] = 1; //3
+        flags[3] = 1; //4
     }
     //B9
-    if () {
-        if(cycle = 1) {
-            g = 1; //7
-            h = 1; //8
-            j = -1; //10
-        }
-        if(cycle = 2) {
-            q = 1; //7
-            r = 1; //8
-            t = -1; //10
-        }
+    if (cycle == 1 && ) {
+        flags[6] = 1; //7
+        flags[7] = 1; //8
+        flags[9] = -1; //10
     }
     //B10
-    if() {
-        if(cycle = 1) {
-            c = 1; //3
-            d = 1; //4
-            i = -1; //9
-        }
-        if (cycle = 2) {
-            m = 1; //3
-            n = 1; //4
-            s = -1; //9
-        }
+    if(cycle == 1 && ) {
+        flags[2] = 1; //3
+        flags[3] = 1; //4
+        flags[8] = -1; //9
     }
     //B11
-    if() {
-        if (cycle = 1) {
-            c = -1; //3
-            d = 1; //4
-            i = 1; //9
-        }
-        if (cycle = 2) {
-            m = -1; //3
-            n = 4; //4
-            s = 1;
-        }
+    if(cycle == 1 && ) {
+        flags[2] = -1; //3
+        flags[3] = 1; //4
+        flags[8] = 1; //9
     }
     //B12
-    if() {
-        if (cycle = 1) {
-            a = 1; //1
-            f = 1; //6
-            h = -1; //8
-        }
-        if (cycle = 2) {
-            k = 1; //1
-            p = 1; //6
-            r = -1; //8
-        }
+    if(cycle == 1 && ) {
+        flags[0] = 1; //1
+        flags[5] = 1; //6
+        flags[7] = -1; //8
     }
     //B13
-    if() {
-        if (cycle = 1) {
-            h = 1; //8
-            i = -1; //9
-            j = 1; //10
-        }
-        if (cycle = 2) {
-            r = 1; //8
-            s = -1; //9
-            t = 1; //10
-        }
+    if(cycle == 1 && ) {
+        flags[7] = 1; //8
+        flags[8] = -1; //9
+        flags[9] = 1; //10
     }
     //B14
-    if() {
-        if (cycle = 1) {
-            c = 1; //3
-            f = -1; //6
-            g = 1; //7
-        }
-        if (cycle = 2) {
-            m = 1; // 3
-            p = -1; //6
-            q = 7; //7
-        }
+    if(cycle == 1 && ) {
+        flags[2] = 1; //3
+        flags[5] = -1; //6
+        flags[6] = 1; //7
     }
         //B15
-        if() {
-            if (cycle = 1) {
-                f = -1; //6
-                i = 1; //9
-                j = 1; //10
-            }
-            if (cycle = 2) {
-                p = -1; //6
-                s = 1; //9
-                t = 1; //10
-            }
+        if(cycle == 1 && ) {
+            flags[5] = -1; //6
+            flags[8] = 1; //9
+            flags[9] = 1; //10
         }
 
         //B16
-        if() {
-            if (cycle = 1) {
-                c = -1; //3
-                d = 1; //4
-                j = 1; //10
-            }
-            if (cycle = 2) {
-                m = -1; //3
-                n = 1; //4
-                t = 1; //10
-            }
+        if(cycle == 1 && ) {
+            flags[2] = -1; //3
+            flags[3] = 1; //4
+            flags[9] = 1; //10
         }
         //B17
-        if() {
-            if (cycle = 1) {
-                b = 1; //2
-                d = 1; //4
-                g = -1; //7
-            }
-            if (cycle = 2) {
-                l = 1; //2
-                n = 1; //4
-                q = -1; //7
-            }
+        if(cycle == 1 && ) {
+            flags[1] = 1; //2
+            flags[3] = 1; //4
+            flags[6] = -1; //7
         }
         //B18
-        if() {
-            if(cycle = 1) {
-                a = 1; //1
-                c = 1; //3
-                i = -1; //9
-            }
-            if (cycle = 2) {
-                k = 1; //1
-                m = 1; //3
-                s = -1; //9
-            }
+        if(cycle == 1 && ) {
+            flags[0] = 1; //1
+            flags[2] = 1; //3
+            flags[8] = -1; //9
         }
         //B19
-        if() {
-            if (cycle = 1) {
-                a = 1; //1
-                f = 1; //6
-                s = -1; //9
-            }
-            if (cycle = 2) {
-                k = 1; //1
-                p = 1; //6
-                s = -1; //9
-            }
+        if(cycle == 1 && ) {
+            flags[0] = 1; //1
+            flags[5] = 1; //6
+            flags[8] = -1; //9
         }
         //B20
-        if() {
-            if (cycle = 1) {
-                c = -1; //3
-                e = 1; //5
-                g = 1; //7
-            }
-            if (cycle = 2) {
-                m = -1; //3
-                o = 1; //5
-                q = 1; //7
-            }
+        if(cycle == 1 && ) {
+            flags[2] = -1; //3
+            flags[4] = 1; //5
+            flags[6] = 1; //7
         }
         //B21
-        if() {
-            if (cycle = 1) {
-                b = 1; //2
-                d = 1; //4
-                j = -1; //10
-            }
-            if (cycle = 2) {
-                l = 1; //2
-                n = 1; //4
-                t = -1; //10
-            }
+        if(cycle == 1 && ) {
+            flags[1] = 1; //2
+            flags[3] = 1; //4
+            flags[9] = -1; //10
         }
         //B22
-        if() {
-            if (cycle = 1) {
-                c = 1; //3
-                e = 1; //5
-                g = -1; //7
-            }
-            if (cycle = 2) {
-                m = 1; //3
-                o = 1; //5
-                q = -1; //7
-            }
+        if(cycle == 1 && ) {
+            flags[2] = 1; //3
+            flags[4] = 1; //5
+            flags[6] = -1; //7
         }
         //B23
-        if() {
-            if (cycle = 1) {
-                a = -1; //1
-                c = 1; //3
-                d = 1; //4
-            }
-            if (cycle = 2) {
-                k = -1; //1
-                m = 1; //3
-                n = 1; //4
-            }
+        if(cycle == 1 && ) {
+            flags[0] = -1; //1
+            flags[2] = 1; //3
+            flags[3] = 1; //4
         }
         //B24
-        if() {
-            if (cycle = 1) {
-                b = 1; //2
-                e = -1; //5
-                i = 1; //9
-            }
-            if (cycle = 2) {
-                l = 2; //2
-                o = -1; //5
-                s = 1; //9
-            }
+        if(cycle == 1 && ) {
+            flags[1] = 1; //2
+            flags[4] = -1; //5
+            flags[8] = 1; //9
         }
         //B25
-        if() {
-            if (cycle = 1) {
-                a = 1; //1
-                d = 1; //4
-                g = -1; //7
-            }
-            if (cycle = 2) {
-                k = 1; //1
-                n = 1; //4
-                q = -1; //7
-            }
+        if(cycle == 1 && ) {
+            flags[0] = 1; //1
+            flags[3] = 1; //4
+            flags[6] = -1; //7
         }
         //B26
-        if() {
-            if (cycle = 1) {
-                b = 1; //2
-                d = 1; //4
-                f = -1; //6
-            }
-            if (cycle = 2) {
-                l = 1; //2
-                n = 1; //4
-                p = -1; //6
-            }
-
+        if(cycle == 1 && ) {
+            flags[1] = 1; //2
+            flags[3] = 1; //4
+            flags[5] = -1; //6
         }
         //B27
-        if() {
-            if (cycle = 1) {
-                a = -1; //1
-                c = 1; //3
-                f = 1; //6
-            }
-            if (cycle = 2) {
-                k = -1; //1
-                m = 1; //3
-                p = 1; //6
-            }
+        if(cycle == 1 && ) {
+            flags[0] = -1; //1
+            flags[2] = 1; //3
+            flags[5] = 1; //6
         }
         //B28
-        if() {
-            if (cycle = 1) {
-                d = 1; //4
-                f = -1; //6
-                h = 1; //8
-            }
-            if (cycle = 2) {
-                n = 1; //4
-                p = -1; //6
-                r = 1; //8
-            }
+        if(cycle == 1 && ) {
+            flags[3] = 1; //4
+            flags[5] = -1; //6
+            flags[7] = 1; //8
         }
         //B29
-        if() {
-            if (cycle = 1) {
-                e = -1; //5
-                f = 1; //6
-                i = 1; //9
-            }
-            if (cycle = 2) {
-                o = -1; //5
-                p = 1; //6
-                s = 1; //9
-            }
+        if(cycle == 1 && ) {
+            flags[4] = -1; //5
+            flags[5] = 1; //6
+            flags[8] = 1; //9
         }
         //B30
-        if() {
-            if (cycle = 1) {
-                b = 1; //2
-                c = -1; //3
-                j = 1; //10
-            }
-            if (cycle = 2) {
-                l = 1; //2
-                m = -1; //3
-                t = 1; //10
-            }
+        if(cycle == 1 && ) {
+            flags[1] = 1; //2
+            flags[2] = -1; //3
+            flags[9] = 1; //10
         }
 
-        //Compare flags a-j to intA[10] and flags k-t to intB[10]
+    //Cycle 2
+    //B1
+    if(cycle == 2 &&) {
+        flags[10] = 1; //11
+        flags[12] = -1; //13
+        flags[14] = 1; //15
+    }
+    //B2
+    if(cycle == 2 &&) {
+        flags[11] = 1; //12
+        flags[15] = -1; //16
+        flags[18] = 1; //19
+    }
+    //B3
+    if(cycle == 2 &&) {
+        flags[13] = 1; //14
+        flags[16] = 1; //17
+        flags[19] = -1; //20
+    }
+    //B4
+    if(cycle == 2 &&) {
+        flags[10] = -1; //11
+        flags[12] = 1; //13
+        flags[17] = 1; //18
+    }
+    //B5
+    if(cycle == 2 &&) {
+        flags[13] = -1; //14
+        flags[15] = 1; //16
+        flags[19] = 1; //20
+    }
+    //B6
+    if(cycle == 2 &&) {
+        flags[11] = 1; //12
+        flags[14] = -1; //15
+        flags[16] = 1; //17
+    }
+    //B7
+    if(cycle == 2 &&) {
+        flags[12] = 1; //13
+        flags[17] = -1; //18
+        flags[18] = 1; //19
+    }
+    //B8
+    if(cycle == 2 &&) {
+        flags[11] = -1; //12
+        flags[14] = 1; //15
+        flags[15] = 1; //16
+    }
+    //B9
+    if(cycle == 2 &&) {
+        flags[10] = 1; //11
+        flags[16] = -1; //17
+        flags[19] = 1; //19
+    }
+    //B10
+    if(cycle == 2 &&) {
+        flags[11] = 1; //12
+        flags[13] = 1; //13
+        flags[18] = -1; //19
+    }
+    //B11
+    if(cycle == 2 &&) {
+        flags[12] = 1; //12
+        flags[14] = -1; //15
+        flags[17] = 1; //18
+    }
+    //B12
+    if(cycle == 2 &&) {
+        flags[10] = 1; //11
+        flags[15] = -1; //16
+        flags[18] = 1; //19
+    }
+    //B13
+    if(cycle == 2 &&) {
+        flags[11] = 1; //12
+        flags[16] = 1; //17
+        flags[19] = -1; //20
+    }
+    //B14
+    if(cycle == 2 &&) {
+        flags[13] = 1; //14
+        flags[17] = -1; //18
+        flags[18] = 1; //19
+    }
+    //B15
+    if(cycle == 2 &&) {
+        flags[12] = -1; //13
+        flags[14] = 1; //15
+        flags[15] = 1; //16
+    }
+    //B16
+    if(cycle == 2 &&) {
+        flags[10] = 1; //11
+        flags[13] = 1; //14
+        flags[16] = -1; //17
+    }
+    //B17
+    if(cycle == 2 &&) {
+        flags[11] = 1; //12
+        flags[12] = -1; //13
+        flags[19] = 1; //20
+    }
+    //B18
+    if(cycle == 2 &&) {
+        flags[13] = -1; //14
+        flags[15] = 1; //16
+        flags[17] = 1; //18
+    }
+    //B19
+    if(cycle == 2 &&) {
+        flags[10] = 1; //11
+        flags[16] = 1; //17
+        flags[18] = -1; //18
+    }
+    //B20
+    if(cycle == 2 &&) {
+        flags[11] = -1; //12
+        flags[14] = 1; //15
+        flags[18] = 1; //19
+    }
+    //B21
+    if(cycle == 2 &&) {
+        flags[12] = 1; //13
+        flags[15] = -1; //16
+        flags[17] = 1; //18
+    }
+    //B22
+    if(cycle == 2 &&) {
+        flags[10] = 1; //11
+        flags[13] = -1; //14
+        flags[19] = 1; //20
+    }
+    //B23
+    if(cycle == 2 &&) {
+        flags[11] = 1; //12
+        flags[12] = -1; //13
+        flags[18] = 1; //19
+    }
+    //B24
+    if(cycle == 2 &&) {
+        flags[13] = 1; //14
+        flags[14] = 1; //15
+        flags[16] = -1; //17
+    }
+    //B25
+    if(cycle == 2 &&) {
+        flags[10] = -1; //11
+        flags[11] = 1; //12
+        flags[16] = -1; //17
+    }
+    //B26
+    if(cycle == 2 &&) {
+        flags[12] = 1; //13
+        flags[17] = 1; //17
+        flags[18] = -1; //19
+    }
+    //B27
+    if(cycle == 2 &&) {
+        flags[14] = -1; //15
+        flags[15] = 1; //16
+        flags[16] = 1; //17
+    }
+    //B28
+    if(cycle == 2 &&) {
+        flags[10] = 1; //11
+        flags[13] = -1; //14
+        flags[16] = 1; //17
+    }
+    //B29
+    if(cycle == 2 &&) {
+        flags[11] = 1; //12
+        flags[12] = -1; //13
+        flags[19] = 1; //20
+    }
+    //B30
+    if(cycle == 2 &&) {
+        flags[14] = 1; //15
+        flags[16] = 1; //17
+        flags[18] = -1; //19
+    }
+
+    //Some extra seasoning (hide anywhere possible)
+    if() {
+        flags[2] = 0;
+    }
+    if() {
+        flags[5] = 0;
+    }
+    if() {
+        flags[9] = 0;
+    }
+    if() {
+        flags[7] = 0;
+    }
+    if() {
+        flags[10] = 0;
+    }
+    if() {
+        flags[19] = 0;
+    }
+    if() {
+        flags[3] = 0;
+    }
+    if() {
+        flags[17] = 0;
+    }
+    if() {
+        flags[2] = 0;
+    }
+    if() {
+        flags[5] = 0;
+    }
+    if() {
+        flags[16] = 0;
+    }
+    if() {
+        flags[15] = 0;
+    }
+
+    //Comparison
+    for (int i = 0; i < FLAG_COUNT; i++) {
+        if (flags[i] == A[i]) {
+            printf("Flag %c matches A[%d]: %d\n", 'a' + i, i, A[i]);
+        } else {
+            printf("Flag %c does not match A[%d]: %d\n", 'a' + i, i, A[i]);
+        }
+    }
 }
 
 
