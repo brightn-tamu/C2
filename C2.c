@@ -654,61 +654,62 @@ int file_check() {
     read_first_20_characters("temp15", read15, sizeof(read15));
 
     //Maze will be built out here for logical order and simplicity and moved to the main functions
-    //Flags. A-E are flags for 5 key files
-    int a = 0;
-    int b = 0;
-    int c = 0;
-    int d = 0;
-    int e = 0;
-    int f = 0;
-    int g = 0;
-    int h = 0;
-    int i = 0;
-    int j = 0;
+    //Flags. A-J are flags for 1st cycle
+    int a = 0; //1
+    int b = 0; //2
+    int c = 0; //3
+    int d = 0; //4
+    int e = 0; //5
+    int f = 0; //6
+    int g = 0; //7
+    int h = 0; //8
+    int i = 0; //9
+    int j = 0; //10
+
+    // Flags k-t are for second cycle
     int k = 0;
     int l = 0;
+    int m = 0;
+    int n = 0;
+    int o = 0;
+    int p = 0;
+    int q = 0;
+    int r = 0;
+    int s = 0;
+    int t = 0;
 
-    if(m_minutes10 < m_minutes11){
-        e = 1;
-        g = 1;
-    }
-    if(strcmp(read7, "Happy Birthday") == 0) {
-        g = 0;
-        f = 1;
-    }
-    if(strcmp(read1, "Thank You") == 0) {
-        a = 1; //KEY
-        e = 0;
-    }
-    if(auth7 == 0) {
-        a = 1;
-        l = 1;
-    }
-    if (f = 1) {
-        if(name7 == 1) {
-            a = 0;
-            l = 1;
+    //Cycle keys
+    int A[10] = {-1,1,-1,1,-1,1,-1,-1,1,1};
+    int B[10] = {-1,1,1,1,1,1,-1,-1,1,-1};
+
+    //Cycle 1 Logic Comparisons
+    if(){
+        a =-1;
+        c = 1;
+        d = 1;
         }
+    if() {
+        a = -1;
+        d = 1;
+        e = 1;
     }
-    if(auth2 == 1) {
-        b = 1; //KEY
-        k = 0;
+    if() {
+        b = 1;
+        g = 1;
+        i = 1;
     }
-    if(file_size3 == 512) {
-        c = 1;  //KEY
+    if() {
+        c = 1;
+        f = 1;
+        g = -1;
+    }
+    if() {
+        b = 1;
+        i = -1;
         j = 1;
     }
-    if(c_minutes4 > 2) {
-        d = 1; //KEY
-        g = 0;
-    }
-    if(m_minutes5 < 2) {
-        e = 1; //KEY
-        f = 1;
-    }
 
 
-    //a, b, c, d, e need to equal 1. All others need to equal 0
 }
 
 
