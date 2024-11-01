@@ -158,7 +158,7 @@ int is_vm_environment() {
             pclose(fp);
         }
     }
-    return is_vm
+    return is_vm;
 }
 
 // Assuming Unix machine
@@ -242,9 +242,9 @@ int main() {
     int function_a(){
       if (debugger_present || vm_present) {
 #ifdef _WIN32
-        Sleep(1000);
+        Sleep(3000);
 #else
-        sleep(1);
+        sleep(3);
 #endif
       }
         if( xor_cycle == 1) {
