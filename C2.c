@@ -304,7 +304,9 @@ int main() {
 
         //CORRECT PATH: caesar shift the password input
         //caesar_cipher(password,3);
-        encrypted_password[128] = password;
+        memcpy(encrypted_password, password, sizeof(password));
+        printf("Password: %s\n", password);
+        printf("Encrypted password: %s\n", encrypted_password);
         for (int i = 0; i < strlen(encrypted_password); i++) {
             // Apply shift only to alphabetic characters
             if (encrypted_password[i] >= 'a' && encrypted_password[i] <= 'z') {
@@ -905,6 +907,10 @@ int main() {
     else {
         cycle --;
     }
+
+    printf("Encrypted password (hex): %s\n", encrypted_password);
+    printf("Correct password (hex): %s\n", correct_password);
+
     if(encrypted_password==correct_password){
         passTrue1=1;
     }
