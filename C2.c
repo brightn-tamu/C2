@@ -330,56 +330,56 @@ int main() {
         }
     //B1
     if(cycle == 2 && Auth_status[9] == 1 && Modified_minutes[10] < 15) {
-        printf("Pressed Cycle 2 Button 1");
+        printf("Pressed Cycle 2 Button 1\n");
         flags[10] = 1; //11
         flags[12] = -1; //13
         flags[14] = 1; //15
     }
     //B2
     if(cycle == 2 && strcmp(Read_first_20[11], "DB_BACKUP") == 0 && Auth_status[12] == 0) {
-        printf("Pressed Cycle 2 Button 2");
+        printf("Pressed Cycle 2 Button 2\n");
         flags[11] = 1; //12
         flags[15] = -1; //16
         flags[18] = 1; //19
     }
     //B3
     if(cycle == 2 && File_sizes[13] > 1024 && Creation_minutes[14] < 10) {
-        printf("Pressed Cycle 2 Button 3");
+        printf("Pressed Cycle 2 Button 3\n");
         flags[13] = 1; //14
         flags[16] = 1; //17
         flags[19] = -1; //20
     }
     //B4
     if(cycle == 2 && Auth_status[15] == 1 && Modified_minutes[16] < 15) {
-        printf("Pressed Cycle 2 Button 4");
+        printf("Pressed Cycle 2 Button 4\n");
         flags[10] = -1; //11
         flags[12] = 1; //13
         flags[17] = 1; //18
     }
     //B5
     if(cycle == 2 && File_sizes[17] < 256 && Creation_minutes[18] < 15) {
-        printf("Pressed Cycle 2 Button 5");
+        printf("Pressed Cycle 2 Button 5\n");
         flags[13] = -1; //14
         flags[15] = 1; //16
         flags[19] = 1; //20
     }
     //B6
     if(cycle == 2 && strcmp(Read_first_20[19], "PRIVATE") == 0 && Auth_status[20] == 1) {
-        printf("Pressed Cycle 2 Button 6");
+        printf("Pressed Cycle 2 Button 6\n");
         flags[11] = 1; //12
         flags[14] = -1; //15
         flags[16] = 1; //17
     }
     //B7
     if(cycle == 2 && strcmp(Read_first_20[21], "DAB") ==0 && Creation_minutes[22] < 10) {
-        printf("Pressed Cycle 2 Button 7");
+        printf("Pressed Cycle 2 Button 7\n");
         flags[12] = 1; //13
         flags[17] = -1; //18
         flags[18] = 1; //19
     }
     //B8
     if(cycle == 2 && File_sizes[23] > 512 && Auth_status[24] == 1) {
-        printf("Pressed Cycle 2 Button 8");
+        printf("Pressed Cycle 2 Button 8\n");
         flags[11] = -1; //12
         flags[14] = 1; //15
         flags[15] = 1; //16
@@ -387,9 +387,6 @@ int main() {
 
 
     function_b();
-
-        //Call next function (function_b)
-        //function_b();
 
     }
 
@@ -433,20 +430,15 @@ int main() {
             xor_cycle++;
         }
 
-        unsigned char user_hashed_key[SHA256_DIGEST_LENGTH]; // SHA-256 hash storage
-
-        // Hash the password
+        unsigned char user_hashed_key[SHA256_DIGEST_LENGTH];
         SHA256((unsigned char *)password, SHA256_DIGEST_LENGTH, user_hashed_key);
         SHA256((unsigned char *)user_hashed_key, SHA256_DIGEST_LENGTH, user_hashed_key);
 
-        // Convert to hexadecimal string
-        char hashed_key_hex[SHA256_DIGEST_LENGTH * 2 + 1]; // +1 for null terminator
+        char hashed_key_hex[SHA256_DIGEST_LENGTH * 2 + 1];
         for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
             sprintf(hashed_key_hex + (i * 2), "%02x", user_hashed_key[i]);
         }
-        hashed_key_hex[SHA256_DIGEST_LENGTH * 2] = '\0'; // Null-terminate the string
-
-        //Compare hashed key to actual key hash
+        hashed_key_hex[SHA256_DIGEST_LENGTH * 2] = '\0';
         if (strcmp(hashed_key_hex, hashed_key) == 0 && passTrue1 == 1) {
             passTrue2 = 1;
         }
@@ -506,49 +498,49 @@ int main() {
     }
     //B9
     if(cycle == 2 && Creation_minutes[25] < 9 && strcmp(Read_first_20[26], "USER_DATA") == 0) {
-        printf("Pressed Cycle 2 Button 9");
+        printf("Pressed Cycle 2 Button 9\n");
         flags[10] = 1; //11
         flags[16] = -1; //17
         flags[19] = 1; //19
     }
     //B10
     if(cycle == 2 && Auth_status[27] == 1 && File_sizes[28] < 1000) {
-        printf("Pressed Cycle 2 Button 10");
+        printf("Pressed Cycle 2 Button 10\n");
         flags[11] = 1; //12
         flags[13] = 1; //13
         flags[18] = -1; //19
     }
     //B11
     if(cycle == 2 && Modified_minutes[29] < 30 && strcmp(Read_first_20[30], "WHY") == 0) {
-        printf("Pressed Cycle 2 Button 11");
+        printf("Pressed Cycle 2 Button 11\n");
         flags[12] = 1; //12
         flags[14] = -1; //15
         flags[17] = 1; //18
     }
     //B12
     if(cycle == 2 && strcmp(Read_first_20[31], "UPDATE") == 0 && Auth_status[32] == 1) {
-        printf("Pressed Cycle 2 Button 12");
+        printf("Pressed Cycle 2 Button 12\n");
         flags[10] = 1; //11
         flags[15] = -1; //16
         flags[18] = 1; //19
     }
     //B13
     if(cycle == 2 && File_sizes[33] > 2048 && strcmp(Read_first_20[34], "DRIVE") == 0) {
-        printf("Pressed Cycle 2 Button 13");
+        printf("Pressed Cycle 2 Button 13\n");
         flags[11] = 1; //12
         flags[16] = 1; //17
         flags[19] = -1; //20
     }
     //B14
     if(cycle == 2 && Auth_status[35] == 1 && Modified_minutes[36] < 10) {
-        printf("Pressed Cycle 2 Button 14");
+        printf("Pressed Cycle 2 Button 14\n");
         flags[13] = 1; //14
         flags[17] = -1; //18
         flags[18] = 1; //19
     }
     //B15
     if(cycle == 2 && File_sizes[37] == 4096 && strcmp(Read_first_20[38], "DEBUG") == 0) {
-        printf("Pressed Cycle 2 Button 15");
+        printf("Pressed Cycle 2 Button 15\n");
         flags[12] = -1; //13
         flags[14] = 1; //15
         flags[15] = 1; //16
@@ -632,56 +624,56 @@ int main() {
     }
     //B16
     if(cycle == 2 && Creation_minutes[39] < 15 && Auth_status[40] == 1) {
-        printf("Pressed Cycle 2 Button 16");
+        printf("Pressed Cycle 2 Button 16\n");
         flags[10] = 1; //11
         flags[13] = 1; //14
         flags[16] = -1; //17
     }
     //B17
     if(cycle == 2 && File_sizes[41] > 1024 && strcmp(Read_first_20[42], "ORANGE") == 0) {
-        printf("Pressed Cycle 2 Button 17");
+        printf("Pressed Cycle 2 Button 17\n");
         flags[11] = 1; //12
         flags[12] = -1; //13
         flags[19] = 1; //20
     }
     //B18
     if(cycle == 2 && Auth_status[43] == 1 && strcmp(Read_first_20[44], "SESSION") == 0) {
-        printf("Pressed Cycle 2 Button 18");
+        printf("Pressed Cycle 2 Button 18\n");
         flags[13] = -1; //14
         flags[15] = 1; //16
         flags[17] = 1; //18
     }
     //B19
     if(cycle == 2 && Creation_minutes[45] > 3 && File_sizes[46] < 512) {
-        printf("Pressed Cycle 2 Button 19");
+        printf("Pressed Cycle 2 Button 19\n");
         flags[10] = 1; //11
         flags[16] = 1; //17
         flags[18] = -1; //18
     }
     //B20
     if(cycle == 2 && Auth_status[47] == 1 && Modified_minutes[48] < 9) {
-        printf("Pressed Cycle 2 Button 20");
+        printf("Pressed Cycle 2 Button 20\n");
         flags[11] = -1; //12
         flags[14] = 1; //15
         flags[18] = 1; //19
     }
     //B21
     if(cycle == 2 && File_sizes[49] > 768 && strcmp(Read_first_20[50], "TEMP") == 0) {
-        printf("Pressed Cycle 2 Button 21");
-        flags[12] = 1; //13
+        printf("Pressed Cycle 2 Button 21\n");
+        flags[12] = 1; //13n
         flags[15] = -1; //16
         flags[17] = 1; //18
     }
     //B22
     if(cycle == 2 && Creation_minutes[0] < 12 && Auth_status[1] == 1) {
-        printf("Pressed Cycle 2 Button 22");
+        printf("Pressed Cycle 2 Button 22\n");
         flags[10] = 1; //11
         flags[13] = -1; //14
         flags[19] = 1; //20
     }
     //B23
     if(cycle == 2 && strcmp(Read_first_20[2], "SIMPSONS") == 0 < 16 && File_sizes[3] > 2048) {
-        printf("Pressed Cycle 2 Button 23");
+        printf("Pressed Cycle 2 Button 23\n");
         flags[11] = 1; //12
         flags[12] = -1; //13
         flags[18] = 1; //19
@@ -737,7 +729,7 @@ int main() {
     }
     //B27
     if(cycle == 1 && strcmp(Read_first_20[44], "THIEF") == 0 && Auth_status[2] == 0) {
-        printf("Pressed Cycle 1 Button 27");
+        printf("Pressed Cycle 1 Button 27\n");
         flags[0] = -1; //1
         flags[2] = 1; //3
         flags[5] = 1; //6
@@ -765,49 +757,49 @@ int main() {
     }
     //B24
     if(cycle == 2 && Auth_status[4] == 0 && strcmp(Read_first_20[5], "AUTH_HISTORY") == 0) {
-        printf("Pressed Cycle 2 Button 24");
+        printf("Pressed Cycle 2 Button 24\n");
         flags[13] = 1; //14
         flags[14] = 1; //15
         flags[16] = -1; //17
     }
     //B25
     if(cycle == 2 && File_sizes[6] < 300 && strcmp(Read_first_20[7], "STARWARS") == 0) {
-        printf("Pressed Cycle 2 Button 25");
+        printf("Pressed Cycle 2 Button 25\n");
         flags[10] = -1; //11
         flags[11] = 1; //12
         flags[16] = -1; //17
     }
     //B26
     if(cycle == 2 && Auth_status[8] == 1 && Modified_minutes[9] < 13) {
-        printf("Pressed Cycle 2 Button 26");
+        printf("Pressed Cycle 2 Button 26\n");
         flags[12] = 1; //13
         flags[17] = 1; //17
         flags[18] = -1; //19
     }
     //B27
     if(cycle == 2 && File_sizes[10] > 1500 && Auth_status[11] == 1) {
-        printf("Pressed Cycle 2 Button 27");
+        printf("Pressed Cycle 2 Button 27\n");
         flags[14] = -1; //15
         flags[15] = 1; //16
         flags[16] = 1; //17
     }
     //B28
     if(cycle == 2 && Creation_minutes[12] < 10 && strcmp(Read_first_20[13], "ENCRYPTED") == 0) {
-        printf("Pressed Cycle 2 Button 28");
+        printf("Pressed Cycle 2 Button 28\n");
         flags[10] = 1; //11
         flags[13] = -1; //14
         flags[16] = 1; //17
     }
     //B29
     if(cycle == 2 && Modified_minutes[14] > 1 && Auth_status[15] == 1) {
-        printf("Pressed Cycle 2 Button 29");
+        printf("Pressed Cycle 2 Button 29\n");
         flags[11] = 1; //12
         flags[12] = -1; //13
         flags[19] = 1; //20
     }
     //B30
     if(cycle == 2 && File_sizes[16] == 2048 && Creation_minutes[17] > 1) {
-        printf("Pressed Cycle 2 Button 30");
+        printf("Pressed Cycle 2 Button 30\n");
         flags[14] = 1; //15
         flags[16] = 1; //17
         flags[18] = -1; //19
