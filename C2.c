@@ -156,6 +156,7 @@ int is_vm_environment() {
             pclose(fp);
         }
     }
+    return is_vm
 }
 
 // Assuming Unix machine
@@ -171,7 +172,19 @@ int debugger_check() {
 }
 
 int is_vm_environment() {
-    return 0;
+    FILE *fp;
+    char buffer[128];
+    int is_vm = 0;
+
+    fp = popen("cat /sys/class/dmi/id/product_name", "r");
+    if (fp) {
+        fgets(buffer, sizeof(buffer), fp);
+        if (strstr(buffer, "VMware") || strstr(buffer, "VirtualBox")) {
+            is_vm = 1; // Detected VMware or VirtualBox
+        }
+        pclose(fp);
+    }
+    return is_vm
 }
 
 #endif
@@ -208,7 +221,7 @@ int main() {
 
     //level 1 password: swag_mesiah
     //  step 1:caesar shift by 3
-    //  step 2: encrypt 
+    //  step 2: encrypt
     //    encryption key: 01234567890123456789012345678901
     //    encryption iv: 0123456789012345
     //  step 3: bitshift left by 1 with wraparound
