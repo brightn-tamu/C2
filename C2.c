@@ -259,10 +259,7 @@ int main() {
     for (int i = 0; i < FILE_AMOUNT; i++) {
         File_exists[i] = file_exists(file_names[i]);
         if (File_exists[i] == 0) { // If the file does not exist
-            Auth_status[i] = INVALID_VALUE;
-            File_sizes[i] = INVALID_VALUE;
-            Creation_minutes[i] = INVALID_VALUE;
-            Modified_minutes[i] = INVALID_VALUE;
+            exit(0);
             snprintf(Read_first_20[i], sizeof(Read_first_20[i]), "N/A"); // Indicate "N/A" for non-existing files
         } else { // If the file exists, gather actual data
             Auth_status[i] = is_read_only(file_names[i]);
