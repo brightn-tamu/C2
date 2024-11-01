@@ -8,8 +8,9 @@
 
 #if defined(_WIN32) || defined(_WIN64)
 #include <windows.h>
-#else
-#include <unistd.h>  // Use for Unix-based systems
+#else // Use for Unix-based systems
+#include <sys/ptrace.h>
+#include <unistd.h>
 #endif
 
 #define SEED 42
@@ -85,7 +86,8 @@ const char *file_names[FILE_AMOUNT] = {
 };
 
 
-
+int debugger_present = 0;
+int vm_present = 0;
 int xor_cycle = 0;
 int cycle = 1;
 int all_match = 1; // Assume all match initially
@@ -161,8 +163,6 @@ int is_vm_environment() {
 
 // Assuming Unix machine
 #else
-#include <sys/ptrace.h>
-#include <unistd.h>
 
 int debugger_check() {
     if (ptrace(PTRACE_TRACEME, 0, 1, 0) == -1) {
@@ -213,8 +213,16 @@ int main() {
     /*
     //Set up checks for debugger and GDB
     */
-    int debugger_present = debugger_check();
-    int vm_present = is_vm_environment();
+    debugger_present = debugger_check();
+    vm_present = is_vm_environment();
+
+    if (debugger_present || vm_present) {
+#ifdef _WIN32
+      Sleep(4000);
+#else
+      sleep(4);
+#endif
+    }
 
     char passTrue = 0;
     char password[20];
@@ -232,6 +240,13 @@ int main() {
 }
 
     int function_a(){
+      if (debugger_present || vm_present) {
+#ifdef _WIN32
+        Sleep(1000);
+#else
+        sleep(1);
+#endif
+      }
         if( xor_cycle == 1) {
             for (int i = 0; i < PASSWORD_LENGTH; i++) {
                 if (i % 2 == 0) {
@@ -408,6 +423,13 @@ int main() {
                 Some logic checks for level 3
     */
     int function_b(){
+      if (debugger_present || vm_present) {
+#ifdef _WIN32
+        Sleep(1000);
+#else
+        sleep(1);
+#endif
+      }
         printf("In function_b\n");
         // Define XOR keys
         unsigned char first_xor_key[PASSWORD_LENGTH] = {0x4F, 0x2A, 0x5E, 0x6C, 0xA8, 0x3D};
@@ -567,7 +589,13 @@ int main() {
                 Some logic checks for level 3
     */
     int function_c(){
-
+      if (debugger_present || vm_present) {
+#ifdef _WIN32
+        Sleep(1000);
+#else
+        sleep(1);
+#endif
+      }
         if (xor_cycle == 1) {
             // Split extracted_key
             int half_length = PASSWORD_LENGTH / 2;
@@ -698,7 +726,13 @@ int main() {
                 Final check for level 3 /payload
     */
     int function_d() {
-
+      if (debugger_present || vm_present) {
+#ifdef _WIN32
+        Sleep(1000);
+#else
+        sleep(1);
+#endif
+      }
     unsigned char even_xor_key = 0x3C; // Define your key for even indexed elements
     unsigned char odd_xor_key = 0x5A;   // Define your key for odd indexed elements
 
