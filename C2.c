@@ -16,13 +16,79 @@
 #define PASSWORD_LENGTH 6
 #define LARGE_ARRAY_LENGTH 35
 #define FLAG_COUNT 20
+#define FILE_AMOUNT 51
+#define INVALID_VALUE -1 // Use -1 as a placeholder for non-existing files
+
 const char *hashed_key = "c1c224b03cd9bc7b6a86d77f5dace40191766c485cd55dc48caf9ac873335d6f";
+
+unsigned char default_values[PASSWORD_LENGTH] = {0x43, 0x70, 0xb7, 0x54, 0xa6, 0x1d};
+
+int File_exists[FILE_AMOUNT] = {0};
+int Auth_status[FILE_AMOUNT] = {0};
+long File_sizes[FILE_AMOUNT] = {0};
+double Creation_minutes[FILE_AMOUNT] = {0};
+double Modified_minutes[FILE_AMOUNT] = {0};
+char Read_first_20[FILE_AMOUNT][21] = {0};
+const char *file_names[FILE_AMOUNT] = {
+    "config.yml",
+    "user_data.json",
+    "cache.bin",
+    "secrets.env",
+    "db_backup.sql",
+    "session.log",
+    "passwords.txt",
+    "README.md",
+    "network_settings.conf",
+    "token.key",
+    "data_export.csv",
+    "notes.docx",
+    "update.sh",
+    "auth_history.log",
+    "sdf1234.tmp",
+    "xXf093@!.dat",
+    "junkfile.xyz",
+    "_____",
+    "test123.bak",
+    "random_numbers.txt",
+    "xoxooxo.py",
+    "out.bin",
+    "GARBAGEFILE.NOPE",
+    "NOPE.NOT",
+    "a$$-data",
+    "1234567890.cfg",
+    "b4h6k3t8.tmp",
+    "xpt9z_scramble.txt",
+    "v__randomfile.cfg",
+    "garbage_12.bin",
+    "not_a_hint.dat",
+    "uNkn0wnKey.txt",
+    "dummy_data_01.bin",
+    "flufffile.bak",
+    "j5k9x.faux",
+    "blahblahblah.doc",
+    "config_backup.ini",
+    "system_logs.txt",
+    "cache_data.bin",
+    "network_settings.conf",
+    "session_data.tmp",
+    "user_profiles.json",
+    "error_report.log",
+    "passwords_bak.txt",
+    "firewall_rules.cfg",
+    "auth_tokens.db",
+    "sys_info_report.xml",
+    "temp_credentials.txt",
+    "debug_trace.log",
+    "private_key.pem",
+    "db_backup_2023.sql"
+};
+
 
 int xor_cycle = 0;
 int cycle = 1;
 int passTrue1 = 0;
 int passTrue2 = 0;
-int passTrue3 = 0;
+int passTrue3 = 1;
 
 //Array to hold encrypted key
 unsigned char extracted_key[PASSWORD_LENGTH];
@@ -44,6 +110,7 @@ int function_d();
 int function_last();
 int array_function();
 int file_check();
+int end_function();
 
 // Check if Windows machine
 #if defined(_WIN32) || defined(_WIN64)
@@ -100,76 +167,6 @@ int is_vm_environment() {
 
 #endif
 
-#define FILE_CHECKS() ;
-
-/*
-files
-    config.yml
-    user_data.json
-    cache.bin
-    secrets.env
-    db_backup.sql
- #endif
-
-#include <openssl/sha.h> 
-
-#define FILE_CHECKS() ;
-
-/*
-files
-    config.yml
-    user_data.json
-    cache.bin
-    secrets.env
-    db_backup.sql
-    session.log
-    passwords.txt
-    README.md
-    network_settings.conf
-    token.key
-    data_export.csv
-    notes.docx
-    update.sh
-    auth_history.log
-    sdf1234.tmp
-    xXf093@!.dat
-    junkfile.xyz
-    _____
-    test123.bak
-    random_numbers.txt
-    xoxooxo.py
-    out.bin
-    GARBAGEFILE.NOPE
-    NOPE.NOT
-    a$$-data
-    1234567890.cfg
-    b4h6k3t8.tmp
-    xpt9z_scramble.txt
-    v__randomfile.cfg
-    garbage_12.bin
-    not_a_hint.dat
-    uNkn0wnKey.txt
-    dummy_data_01.bin
-    flufffile.bak
-    j5k9x.faux
-    blahblahblah.doc
-    config_backup.ini
-    system_logs.txt
-    cache_data.bin
-    network_settings.conf
-    session_data.tmp
-    user_profiles.json
-    error_report.log
-    passwords_bak.txt
-    firewall_rules.cfg
-    auth_tokens.db
-    sys_info_report.xml
-    temp_credentials.txt
-    debug_trace.log
-    private_key.pem
-    db_backup_2023.sql
-*/
-
 void print_array(const char *label, const unsigned char *array, int length) {
     printf("%s: ", label);
     for (int i = 0; i < length; i++) {
@@ -222,9 +219,12 @@ int main() {
     /*          prompt and check inputs- COMPLETE
                 Some logic for level 2 array- COMPLETE
                 Some logic checks for level 3
+
+                encrypted payload: {0x43, 0x70, 0xb7, 0x54, 0xa6, 0x1d}
+                "BANJO"
     */
     int function_a(){
-
+        printf("In function_a\n");
         if( xor_cycle == 1) {
             for (int i = 0; i < PASSWORD_LENGTH; i++) {
                 if (i % 2 == 0) {
@@ -236,6 +236,11 @@ int main() {
 
             print_array("Reconstructed XORed result", extracted_key, PASSWORD_LENGTH);
 
+        }
+
+        printf("passTrue1: %d, passTrue2: %d, passTrue3: %d\n", passTrue1, passTrue2, passTrue3);
+        if(passTrue1 == 1 && passTrue2 == 1 && passTrue3 == 1) {
+            end_function();
         }
 
         // Prompt the user to enter the password
@@ -253,7 +258,7 @@ int main() {
         while (getchar() != '\n')
             continue;
 
-
+        passTrue1 = 1;
         //CORRECT PATH: caesar shift the password input
         //caesar_cipher(password,3);
 
@@ -270,12 +275,29 @@ int main() {
 
 
     int function_b(){
-
+        printf("In function_b\n");
         // Define XOR keys
         unsigned char first_xor_key[PASSWORD_LENGTH] = {0x4F, 0x2A, 0x5E, 0x6C, 0xA8, 0x3D};
         unsigned char second_xor_key[PASSWORD_LENGTH] = {0x5A, 0x3B, 0x7D, 0x1E, 0xA5, 0x62};
 
-        if (xor_cycle == 0) {
+        if (xor_cycle == 0 && extracted_key[0] == 0) {
+            for (int i = 0; i < PASSWORD_LENGTH; i++) {
+                extracted_key[i] = default_values[i];
+            }
+
+            if (extracted_key[0] != 0) {
+                // First cycle: apply the first XOR key
+                print_array("Extracted key for decryption", extracted_key, PASSWORD_LENGTH);
+                for (int i = 0; i < PASSWORD_LENGTH; i++) {
+                    extracted_key[i] = extracted_key[i] ^ first_xor_key[i % PASSWORD_LENGTH];
+                }
+
+                print_array("XOR key", extracted_key, PASSWORD_LENGTH);
+
+                xor_cycle++;
+            }
+        }
+        else if (xor_cycle == 0) {
             if (extracted_key[0] != 0) {
                 // First cycle: apply the first XOR key
                 print_array("Extracted key for decryption", extracted_key, PASSWORD_LENGTH);
@@ -349,6 +371,8 @@ int main() {
                 Some logic checks for level 3
     */
     int function_c(){
+        printf("In function_c\n");
+
 
         if (xor_cycle == 1) {
             // Split extracted_key
@@ -379,42 +403,35 @@ int main() {
     /*
                 Final check for level 3 /payload
     */
-    int function_d(){
-        unsigned char even_xor_key = 0x3C; // Define your key for even indexed elements
-        unsigned char odd_xor_key = 0x5A;   // Define your key for odd indexed elements
+    int function_d() {
+    printf("In function_d\n");
 
-        if(xor_cycle == 1) {
-            //XOR evens
-            for (int i = 0; i < (PASSWORD_LENGTH / 2); i++) {
-                reversed_evens[i] ^= even_xor_key;
-            }
+    unsigned char even_xor_key = 0x3C; // Define your key for even indexed elements
+    unsigned char odd_xor_key = 0x5A;   // Define your key for odd indexed elements
 
-            //Shift evens
-            for (int i = 0; i < (PASSWORD_LENGTH /2); i++) {
-                reversed_evens[i] = (reversed_evens[i] >> 1) | (reversed_evens[i] << (8 - 1));
-            }
-
-            print_array("Unshifted and un-XORed even-indexed elements", reversed_evens, PASSWORD_LENGTH / 2);
-
-
-            //XOR odds
-            for (int i = 0; i < (PASSWORD_LENGTH / 2); i++) {
-                reversed_odds[i] ^= odd_xor_key;
-            }
-
-            print_array("Un-XORed odd-indexed elements", reversed_odds, PASSWORD_LENGTH / 2);
-
+    if(xor_cycle == 1) {
+        //XOR evens
+        for (int i = 0; i < (PASSWORD_LENGTH / 2); i++) {
+            reversed_evens[i] ^= even_xor_key;
         }
 
-    if (passTrue1 == 1 && passTrue2 == 1 && passTrue3 == 1) {
-        function_last();
-    }
-        function_a();
+        //Shift evens
+        for (int i = 0; i < (PASSWORD_LENGTH /2); i++) {
+            reversed_evens[i] = (reversed_evens[i] >> 1) | (reversed_evens[i] << (8 - 1));
+        }
+
+        print_array("Unshifted and un-XORed even-indexed elements", reversed_evens, PASSWORD_LENGTH / 2);
+
+
+        //XOR odds
+        for (int i = 0; i < (PASSWORD_LENGTH / 2); i++) {
+            reversed_odds[i] ^= odd_xor_key;
+        }
+
+        print_array("Un-XORed odd-indexed elements", reversed_odds, PASSWORD_LENGTH / 2);
     }
 
-    int function_last() {
-    printf("Payload");
-    exit(0);
+    function_a();
 }
 
 
@@ -440,6 +457,38 @@ int main() {
         function_b();
 
         return 0;
+    }
+
+    int end_function() {
+        printf("In print loop\n");
+        unsigned char final_result[PASSWORD_LENGTH + 1]; // Add space for null-terminator
+        for (int i = 0; i < PASSWORD_LENGTH; i++) {
+            final_result[i] = extracted_key[i];
+        }
+        final_result[PASSWORD_LENGTH] = '\0'; // Add null-terminator
+
+        printf("Final result (hex): ");
+        for (int i = 0; i < PASSWORD_LENGTH; i++) {
+            printf("0x%02X ", final_result[i]);
+        }
+        printf("\n");
+
+        // Print final_result as individual characters with ASCII verification
+        printf("Final result (characters): ");
+        for (int i = 0; i < PASSWORD_LENGTH; i++) {
+            if (final_result[i] >= 0x20 && final_result[i] <= 0x7E) { // Check if printable ASCII
+                printf("%c", final_result[i]);
+            } else {
+                printf("."); // Placeholder for non-printable characters
+            }
+        }
+        printf("\n");
+
+#if defined(_WIN32) || defined(_WIN64)
+        Sleep(100);  // Sleep for 100 milliseconds on Windows
+#else
+        sleep(1);  // Sleep for 1 second on Unix-based systems
+#endif
     }
 
 // Function to check if a file exists
@@ -536,312 +585,206 @@ void read_first_20_characters(const char *file_path, char *buffer, size_t buffer
     fclose(file); // Close the file
 }
 
+
 int file_check() {
-    /* logic for checking file contents needs added.
-     * Using temporary variables
-     *
-     * Will probably retrieve and store data in arrays.
-     * Temporarily doing this to work out logic
-     */
-
-    //Check if file exists
-    int name1 = file_exists("Temp");
-    int name2 = file_exists("Temp2");
-    int name3 = file_exists("Temp3");
-    int name4 = file_exists("Temp4");
-    int name5 = file_exists("Temp5");
-    int name6 = file_exists("Temp6");
-    int name7 = file_exists("Temp7");
-    int name8 = file_exists("Temp8");
-    int name9 = file_exists("Temp9");
-    int name10 = file_exists("Temp10");
-    int name11 = file_exists("Temp11");
-    int name12 = file_exists("Temp12");
-    int name13 = file_exists("Temp13");
-    int name14 = file_exists("Temp14");
-    int name15 = file_exists("Temp15");
-
-    //Check if it is read-only
-    int auth1 = is_read_only("Temp");
-    int auth2 = is_read_only("Temp2");
-    int auth3 = is_read_only("Temp3");
-    int auth4 = is_read_only("Temp4");
-    int auth5 = is_read_only("Temp5");
-    int auth6 = is_read_only("Temp6");
-    int auth7 = is_read_only("Temp7");
-    int auth8 = is_read_only("Temp8");
-    int auth9 = is_read_only("Temp9");
-    int auth10 = is_read_only("Temp10");
-    int auth11 = is_read_only("Temp11");
-    int auth12 = is_read_only("Temp12");
-    int auth13 = is_read_only("Temp13");
-    int auth14 = is_read_only("Temp14");
-    int auth15 = is_read_only("Temp15");
-
-    //Get file size
-    long file_size1 = get_file_size("Temp");
-    long file_size2 = get_file_size("Temp2");
-    long file_size3 = get_file_size("Temp3");
-    long file_size4 = get_file_size("Temp4");
-    long file_size5 = get_file_size("Temp5");
-    long file_size6 = get_file_size("Temp6");
-    long file_size7 = get_file_size("Temp7");
-    long file_size8 = get_file_size("Temp8");
-    long file_size9 = get_file_size("Temp9");
-    long file_size10 = get_file_size("Temp10");
-    long file_size11 = get_file_size("Temp11");
-    long file_size12 = get_file_size("Temp12");
-    long file_size13 = get_file_size("Temp13");
-    long file_size14 = get_file_size("Temp14");
-    long file_size15 = get_file_size("Temp15");
-
-    //Get minutes since creation
-    double c_minutes1 = minutes_since_creation("Temp");
-    double c_minutes2 = minutes_since_creation("Temp2");
-    double c_minutes3 = minutes_since_creation("Temp3");
-    double c_minutes4 = minutes_since_creation("Temp4");
-    double c_minutes5 = minutes_since_creation("Temp5");
-    double c_minutes6 = minutes_since_creation("Temp6");
-    double c_minutes7 = minutes_since_creation("Temp7");
-    double c_minutes8 = minutes_since_creation("Temp8");
-    double c_minutes9 = minutes_since_creation("Temp9");
-    double c_minutes10 = minutes_since_creation("Temp10");
-    double c_minutes11 = minutes_since_creation("Temp11");
-    double c_minutes12 = minutes_since_creation("Temp12");
-    double c_minutes13 = minutes_since_creation("Temp13");
-    double c_minutes14 = minutes_since_creation("Temp14");
-    double c_minutes15 = minutes_since_creation("Temp15");
-
-    //Get minutes since updated
-    double m_minutes1 = minutes_since_last_modified("Temp");
-    double m_minutes2 = minutes_since_last_modified("Temp2");
-    double m_minutes3 = minutes_since_last_modified("Temp3");
-    double m_minutes4 = minutes_since_last_modified("Temp4");
-    double m_minutes5 = minutes_since_last_modified("Temp5");
-    double m_minutes6 = minutes_since_last_modified("Temp6");
-    double m_minutes7 = minutes_since_last_modified("Temp7");
-    double m_minutes8 = minutes_since_last_modified("Temp8");
-    double m_minutes9 = minutes_since_last_modified("Temp9");
-    double m_minutes10 = minutes_since_last_modified("Temp10");
-    double m_minutes11 = minutes_since_last_modified("Temp11");
-    double m_minutes12 = minutes_since_last_modified("Temp12");
-    double m_minutes13 = minutes_since_last_modified("Temp13");
-    double m_minutes14 = minutes_since_last_modified("Temp14");
-    double m_minutes15 = minutes_since_last_modified("Temp15");
-
-    //Get first 20 characters
-    char read1[21];
-    read_first_20_characters("temp1", read1, sizeof(read1));
-    char read2[21];
-    read_first_20_characters("temp2", read2, sizeof(read2));
-    char read3[21];
-    read_first_20_characters("temp3", read3, sizeof(read3));
-    char read4[21];
-    read_first_20_characters("temp4", read4, sizeof(read4));
-    char read5[21];
-    read_first_20_characters("temp5", read5, sizeof(read5));
-    char read6[21];
-    read_first_20_characters("temp6", read6, sizeof(read6));
-    char read7[21];
-    read_first_20_characters("temp7", read7, sizeof(read7));
-    char read8[21];
-    read_first_20_characters("temp8", read8, sizeof(read8));
-    char read9[21];
-    read_first_20_characters("temp9", read9, sizeof(read9));
-    char read10[21];
-    read_first_20_characters("temp10", read10, sizeof(read10));
-    char read11[21];
-    read_first_20_characters("temp11", read11, sizeof(read11));
-    char read12[21];
-    read_first_20_characters("temp12", read12, sizeof(read12));
-    char read13[21];
-    read_first_20_characters("temp13", read13, sizeof(read13));
-    char read14[21];
-    read_first_20_characters("temp14", read14, sizeof(read14));
-    char read15[21];
-    read_first_20_characters("temp15", read15, sizeof(read15));
-
+    // Iterate over files and populate the arrays
+    for (int i = 0; i < FILE_AMOUNT; i++) {
+        File_exists[i] = file_exists(file_names[i]);
+        if (File_exists[i] == 0) { // If the file does not exist
+            Auth_status[i] = INVALID_VALUE;
+            File_sizes[i] = INVALID_VALUE;
+            Creation_minutes[i] = INVALID_VALUE;
+            Modified_minutes[i] = INVALID_VALUE;
+            snprintf(Read_first_20[i], sizeof(Read_first_20[i]), "N/A"); // Indicate "N/A" for non-existing files
+        } else { // If the file exists, gather actual data
+            Auth_status[i] = is_read_only(file_names[i]);
+            File_sizes[i] = get_file_size(file_names[i]);
+            Creation_minutes[i] = minutes_since_creation(file_names[i]);
+            Modified_minutes[i] = minutes_since_last_modified(file_names[i]);
+            read_first_20_characters(file_names[i], Read_first_20[i], sizeof(Read_first_20[i]));
+        }
+    }
     //Maze will be built out here for logical order and simplicity and moved to the main functions
 
     //Cycle 1 Logic Comparisons
     //B1
-    if(cycle == 1 && ) {
+    if(cycle == 1 && Auth_status[0] == 1 && File_sizes[1] > 2048) {
         flags[0] = -1; //1
         flags[2] = 1; //3
         flags[3] = 1; //4
 
     }
     //B2
-    if(cycle == 1 && ) {
+    if(cycle == 1 && Creation_minutes[2] < 60 && Auth_status[3] == 0) {
         flags[0] = -1;  //1
         flags[3] = 1;  //4
         flags[4] = 1;  //5
     }
     //B3
-    if(cycle == 1 && ) {
+    if(cycle == 1 && Modified_minutes[4] > 120 && File_sizes[5] == 1024) {
         flags[1] = 1; //2
         flags[6] = 1; //7
         flags[8] = 1; //9
     }
     //B4
-    if(cycle == 1 && ) {
+    if(cycle == 1 && Auth_status[6] == -1 && File_sizes[7] < 500) {
         flags[2] = 1; //3
         flags[5] = 1; //6
         flags[6] = -1; //7
     }
     //B5
-    if(cycle == 1 && ) {
+    if(cycle == 1 && strcmp(Read_first_20[8], "SECRET") == 0 && Creation_minutes[9] > 30) {
         flags[1] = 1; //2
         flags[8] = -1; //9
         flags[9] = 1; //10
     }
     //B6
-    if(cycle == 1 && ) {
+    if(cycle == 1 && Auth_status[10] == 1 && Modified_minutes[11] < 15) {
         flags[0] = 1; //1
         flags[3] = 1; //4
         flags[5] = -1; //6
     }
     //B7
-    if(cycle == 1 && ) {
+    if(cycle == 1 && File_sizes[12] > 4096 && Creation_minutes[13] == 45) {
         flags[1] = -1; //2
         flags[4] = 1; //5
         flags[9] = 1; //10
     }
     //B8
-    if(cycle == 1 && ) {
+    if(cycle == 1 && Auth_status[14] == 0 && strcmp(Read_first_20[15], "PASSWORD") == 0) {
         flags[0] = -1; //1
         flags[2] = 1; //3
         flags[3] = 1; //4
     }
     //B9
-    if (cycle == 1 && ) {
+    if (cycle == 1 && File_sizes[16] < 2048 && Auth_status[17] == 1) {
         flags[6] = 1; //7
         flags[7] = 1; //8
         flags[9] = -1; //10
     }
     //B10
-    if(cycle == 1 && ) {
+    if(cycle == 1 && Modified_minutes[18] == 30 && Creation_minutes[19] > 60) {
         flags[2] = 1; //3
         flags[3] = 1; //4
         flags[8] = -1; //9
     }
     //B11
-    if(cycle == 1 && ) {
+    if(cycle == 1 && strcmp(Read_first_20[20], "CONFIG") == 0 && File_sizes[21] > 1024) {
         flags[2] = -1; //3
         flags[3] = 1; //4
         flags[8] = 1; //9
     }
     //B12
-    if(cycle == 1 && ) {
+    if(cycle == 1 && Auth_status[22] == 1 && Creation_minutes[23] < 10) {
         flags[0] = 1; //1
         flags[5] = 1; //6
         flags[7] = -1; //8
     }
     //B13
-    if(cycle == 1 && ) {
+    if(cycle == 1 && File_sizes[24] == 512 && Auth_status[25] == 0) {
         flags[7] = 1; //8
         flags[8] = -1; //9
         flags[9] = 1; //10
     }
     //B14
-    if(cycle == 1 && ) {
+    if(cycle == 1 && Modified_minutes[26] > 180 && strcmp(Read_first_20[27], "DATA") == 0) {
         flags[2] = 1; //3
         flags[5] = -1; //6
         flags[6] = 1; //7
     }
         //B15
-        if(cycle == 1 && ) {
+        if(cycle == 1 && Creation_minutes[28] < 120 && Auth_status[29] == 1) {
             flags[5] = -1; //6
             flags[8] = 1; //9
             flags[9] = 1; //10
         }
 
         //B16
-        if(cycle == 1 && ) {
+        if(cycle == 1 && File_sizes[30] > 3072 && Modified_minutes[31] < 5) {
             flags[2] = -1; //3
             flags[3] = 1; //4
             flags[9] = 1; //10
         }
         //B17
-        if(cycle == 1 && ) {
+        if(cycle == 1 && strcmp(Read_first_20[32], "KEY") == 0 && Auth_status[33] == -1) {
             flags[1] = 1; //2
             flags[3] = 1; //4
             flags[6] = -1; //7
         }
         //B18
-        if(cycle == 1 && ) {
+        if(cycle == 1 && File_sizes[34] < 768 && Creation_minutes[35] > 15) {
             flags[0] = 1; //1
             flags[2] = 1; //3
             flags[8] = -1; //9
         }
         //B19
-        if(cycle == 1 && ) {
+        if(cycle == 1 && Auth_status[36] == 1 && Modified_minutes[37] == 60) {
             flags[0] = 1; //1
             flags[5] = 1; //6
             flags[8] = -1; //9
         }
         //B20
-        if(cycle == 1 && ) {
+        if(cycle == 1 && Creation_minutes[38] < 45 && strcmp(Read_first_20[39], "LOG") == 0) {
             flags[2] = -1; //3
             flags[4] = 1; //5
             flags[6] = 1; //7
         }
         //B21
-        if(cycle == 1 && ) {
+        if(cycle == 1 && File_sizes[40] > 2048 && Auth_status[41] == 0) {
             flags[1] = 1; //2
             flags[3] = 1; //4
             flags[9] = -1; //10
         }
         //B22
-        if(cycle == 1 && ) {
+        if(cycle == 1 && Modified_minutes[42] < 30 && Creation_minutes[43] == 90) {
             flags[2] = 1; //3
             flags[4] = 1; //5
             flags[6] = -1; //7
         }
         //B23
-        if(cycle == 1 && ) {
+        if(cycle == 1 && strcmp(Read_first_20[44], "INFO") == 0 && Auth_status[45] == 1) {
             flags[0] = -1; //1
             flags[2] = 1; //3
             flags[3] = 1; //4
         }
         //B24
-        if(cycle == 1 && ) {
+        if(cycle == 1 && File_sizes[46] < 1500 && Modified_minutes[47] > 120) {
             flags[1] = 1; //2
             flags[4] = -1; //5
             flags[8] = 1; //9
         }
         //B25
-        if(cycle == 1 && ) {
+        if(cycle == 1 && Auth_status[48] == 1 && Creation_minutes[49] < 60) {
             flags[0] = 1; //1
             flags[3] = 1; //4
             flags[6] = -1; //7
         }
         //B26
-        if(cycle == 1 && ) {
+        if(cycle == 1 && File_sizes[50] > 256 && strcmp(Read_first_20[0], "START") == 0) {
             flags[1] = 1; //2
             flags[3] = 1; //4
             flags[5] = -1; //6
         }
         //B27
-        if(cycle == 1 && ) {
+        if(cycle == 1 && Modified_minutes[1] == 15 && Auth_status[2] == 0) {
             flags[0] = -1; //1
             flags[2] = 1; //3
             flags[5] = 1; //6
         }
         //B28
-        if(cycle == 1 && ) {
+        if(cycle == 1 && Creation_minutes[3] < 120 && File_sizes[4] == 1024) {
             flags[3] = 1; //4
             flags[5] = -1; //6
             flags[7] = 1; //8
         }
         //B29
-        if(cycle == 1 && ) {
+        if(cycle == 1 && Auth_status[5] == 1 && strcmp(Read_first_20[6], "TOKEN") == 0) {
             flags[4] = -1; //5
             flags[5] = 1; //6
             flags[8] = 1; //9
         }
         //B30
-        if(cycle == 1 && ) {
+        if(cycle == 1 && File_sizes[7] < 512 && Creation_minutes[8] > 45) {
             flags[1] = 1; //2
             flags[2] = -1; //3
             flags[9] = 1; //10
@@ -849,221 +792,221 @@ int file_check() {
 
     //Cycle 2
     //B1
-    if(cycle == 2 &&) {
+    if(cycle == 2 && Auth_status[9] == -1 && Modified_minutes[10] < 15) {
         flags[10] = 1; //11
         flags[12] = -1; //13
         flags[14] = 1; //15
     }
     //B2
-    if(cycle == 2 &&) {
+    if(cycle == 2 && strcmp(Read_first_20[11], "DB_BACKUP") == 0 && Auth_status[12] == 0) {
         flags[11] = 1; //12
         flags[15] = -1; //16
         flags[18] = 1; //19
     }
     //B3
-    if(cycle == 2 &&) {
+    if(cycle == 2 && File_sizes[13] > 1024 && Creation_minutes[14] < 30) {
         flags[13] = 1; //14
         flags[16] = 1; //17
         flags[19] = -1; //20
     }
     //B4
-    if(cycle == 2 &&) {
+    if(cycle == 2 && Auth_status[15] == 1 && Modified_minutes[16] == 45) {
         flags[10] = -1; //11
         flags[12] = 1; //13
         flags[17] = 1; //18
     }
     //B5
-    if(cycle == 2 &&) {
+    if(cycle == 2 && File_sizes[17] < 256 && Creation_minutes[18] > 15) {
         flags[13] = -1; //14
         flags[15] = 1; //16
         flags[19] = 1; //20
     }
     //B6
-    if(cycle == 2 &&) {
+    if(cycle == 2 && strcmp(Read_first_20[19], "PRIVATE") == 0 && Auth_status[20] == 1) {
         flags[11] = 1; //12
         flags[14] = -1; //15
         flags[16] = 1; //17
     }
     //B7
-    if(cycle == 2 &&) {
+    if(cycle == 2 && Modified_minutes[21] > 180 && Creation_minutes[22] < 120) {
         flags[12] = 1; //13
         flags[17] = -1; //18
         flags[18] = 1; //19
     }
     //B8
-    if(cycle == 2 &&) {
+    if(cycle == 2 && File_sizes[23] > 512 && Auth_status[24] == 0) {
         flags[11] = -1; //12
         flags[14] = 1; //15
         flags[15] = 1; //16
     }
     //B9
-    if(cycle == 2 &&) {
+    if(cycle == 2 && Creation_minutes[25] == 90 && strcmp(Read_first_20[26], "USER_DATA") == 0) {
         flags[10] = 1; //11
         flags[16] = -1; //17
         flags[19] = 1; //19
     }
     //B10
-    if(cycle == 2 &&) {
+    if(cycle == 2 && Auth_status[27] == -1 && File_sizes[28] < 1000) {
         flags[11] = 1; //12
         flags[13] = 1; //13
         flags[18] = -1; //19
     }
     //B11
-    if(cycle == 2 &&) {
+    if(cycle == 2 && Modified_minutes[29] < 30 && Creation_minutes[30] == 60) {
         flags[12] = 1; //12
         flags[14] = -1; //15
         flags[17] = 1; //18
     }
     //B12
-    if(cycle == 2 &&) {
+    if(cycle == 2 && strcmp(Read_first_20[31], "UPDATE") == 0 && Auth_status[32] == 1) {
         flags[10] = 1; //11
         flags[15] = -1; //16
         flags[18] = 1; //19
     }
     //B13
-    if(cycle == 2 &&) {
+    if(cycle == 2 && File_sizes[33] > 2048 && Creation_minutes[34] > 90) {
         flags[11] = 1; //12
         flags[16] = 1; //17
         flags[19] = -1; //20
     }
     //B14
-    if(cycle == 2 &&) {
+    if(cycle == 2 && Auth_status[35] == 0 && Modified_minutes[36] < 60) {
         flags[13] = 1; //14
         flags[17] = -1; //18
         flags[18] = 1; //19
     }
     //B15
-    if(cycle == 2 &&) {
+    if(cycle == 2 && File_sizes[37] == 4096 && strcmp(Read_first_20[38], "DEBUG") == 0) {
         flags[12] = -1; //13
         flags[14] = 1; //15
         flags[15] = 1; //16
     }
     //B16
-    if(cycle == 2 &&) {
+    if(cycle == 2 && Creation_minutes[39] < 15 && Auth_status[40] == -1) {
         flags[10] = 1; //11
         flags[13] = 1; //14
         flags[16] = -1; //17
     }
     //B17
-    if(cycle == 2 &&) {
+    if(cycle == 2 && File_sizes[41] > 1024 && Modified_minutes[42] == 180) {
         flags[11] = 1; //12
         flags[12] = -1; //13
         flags[19] = 1; //20
     }
     //B18
-    if(cycle == 2 &&) {
+    if(cycle == 2 && Auth_status[43] == 1 && strcmp(Read_first_20[44], "SESSION") == 0) {
         flags[13] = -1; //14
         flags[15] = 1; //16
         flags[17] = 1; //18
     }
     //B19
-    if(cycle == 2 &&) {
+    if(cycle == 2 && Creation_minutes[45] > 30 && File_sizes[46] < 512) {
         flags[10] = 1; //11
         flags[16] = 1; //17
         flags[18] = -1; //18
     }
     //B20
-    if(cycle == 2 &&) {
+    if(cycle == 2 && Auth_status[47] == 0 && Modified_minutes[48] > 90) {
         flags[11] = -1; //12
         flags[14] = 1; //15
         flags[18] = 1; //19
     }
     //B21
-    if(cycle == 2 &&) {
+    if(cycle == 2 && File_sizes[49] > 768 && strcmp(Read_first_20[50], "TEMP") == 0) {
         flags[12] = 1; //13
         flags[15] = -1; //16
         flags[17] = 1; //18
     }
     //B22
-    if(cycle == 2 &&) {
+    if(cycle == 2 && Creation_minutes[0] < 120 && Auth_status[1] == 1) {
         flags[10] = 1; //11
         flags[13] = -1; //14
         flags[19] = 1; //20
     }
     //B23
-    if(cycle == 2 &&) {
+    if(cycle == 2 && Modified_minutes[2] == 60 && File_sizes[3] > 2048) {
         flags[11] = 1; //12
         flags[12] = -1; //13
         flags[18] = 1; //19
     }
     //B24
-    if(cycle == 2 &&) {
+    if(cycle == 2 && Auth_status[4] == 0 && strcmp(Read_first_20[5], "AUTH_HISTORY") == 0) {
         flags[13] = 1; //14
         flags[14] = 1; //15
         flags[16] = -1; //17
     }
     //B25
-    if(cycle == 2 &&) {
+    if(cycle == 2 && File_sizes[6] < 300 && Creation_minutes[7] > 45) {
         flags[10] = -1; //11
         flags[11] = 1; //12
         flags[16] = -1; //17
     }
     //B26
-    if(cycle == 2 &&) {
+    if(cycle == 2 && Auth_status[8] == -1 && Modified_minutes[9] < 30) {
         flags[12] = 1; //13
         flags[17] = 1; //17
         flags[18] = -1; //19
     }
     //B27
-    if(cycle == 2 &&) {
+    if(cycle == 2 && File_sizes[10] > 1500 && Auth_status[11] == 1) {
         flags[14] = -1; //15
         flags[15] = 1; //16
         flags[16] = 1; //17
     }
     //B28
-    if(cycle == 2 &&) {
+    if(cycle == 2 && Creation_minutes[12] < 10 && strcmp(Read_first_20[13], "ENCRYPTED") == 0) {
         flags[10] = 1; //11
         flags[13] = -1; //14
         flags[16] = 1; //17
     }
     //B29
-    if(cycle == 2 &&) {
+    if(cycle == 2 && Modified_minutes[14] > 180 && Auth_status[15] == 0) {
         flags[11] = 1; //12
         flags[12] = -1; //13
         flags[19] = 1; //20
     }
     //B30
-    if(cycle == 2 &&) {
+    if(cycle == 2 && File_sizes[16] == 2048 && Creation_minutes[17] > 60) {
         flags[14] = 1; //15
         flags[16] = 1; //17
         flags[18] = -1; //19
     }
 
     //Some extra seasoning (hide anywhere possible)
-    if() {
+    if(Auth_status[0] == 1) {
         flags[2] = 0;
     }
-    if() {
+    if(File_sizes[1] < 1024) {
         flags[5] = 0;
     }
-    if() {
+    if(Auth_status[5] == 0) {
         flags[9] = 0;
     }
-    if() {
+    if(Creation_minutes[7] >= 3) {
         flags[7] = 0;
     }
-    if() {
+    if(Creation_minutes[2] < 5) {
         flags[10] = 0;
     }
-    if() {
+    if(strcmp(Read_first_20[9], "CONFIG") != 0) {
         flags[19] = 0;
     }
-    if() {
+    if(strcmp(Read_first_20[14], "KEY") == 0) {
         flags[3] = 0;
     }
-    if() {
+    if(strcmp(Read_first_20[19], "LOG") == 0) {
         flags[17] = 0;
     }
-    if() {
+    if(strcmp(Read_first_20[30], "GRAPE") == 0) {
         flags[2] = 0;
     }
-    if() {
+    if(strcmp(Read_first_20[17], "TWIG") == 0) {
         flags[5] = 0;
     }
-    if() {
+    if(strcmp(Read_first_20[7], "DREAMS") == 0) {
         flags[16] = 0;
     }
-    if() {
+    if(strcmp(Read_first_20[35], "WALK") == 0) {
         flags[15] = 0;
     }
 
@@ -1076,6 +1019,7 @@ int file_check() {
         }
     }
 }
+
 
 
 

@@ -21,7 +21,8 @@ add_executable(C2
         C2.c
         encrypt_key.c
         encrypt_password.c
-        SMC.c)
+        SMC.c
+        encrypt_payload.c)
 
 # Link OpenSSL libraries
 target_link_libraries(C2 OpenSSL::SSL OpenSSL::Crypto)
