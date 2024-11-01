@@ -5,6 +5,7 @@
 #include <dirent.h>
 #include <time.h>
 #include <openssl/sha.h>
+#include <openssl/evp.h>
 
 #if defined(_WIN32) || defined(_WIN64)
 #include <windows.h>
@@ -19,6 +20,11 @@
 #define FILE_AMOUNT 51
 #define INVALID_VALUE '-1' // Use -1 as a placeholder for non-existing files
 
+const char correct_password[] = "0ff12bb203c614375be303ce2ed0dc58";
+unsigned char key[32] = "01234567890123456789012345678901";  // 256-bit key
+unsigned char iv[16] = "0123456789012345";                   // 128-bit IV
+unsigned char encrypted_password[128];
+int ciphertext_len;
 
 const char *hashed_key = "3de005e2cec68725c476f957c5dc0b89ddd31c47de4d1503e24f9882db74e4f3";
 
@@ -213,12 +219,25 @@ int main() {
     //    encryption iv: 0123456789012345
     //  step 3: bitshift left by 1 with wraparound
 
-    const char correct_password[] = "0ff12bb203c614375be303ce2ed0dc58";
+   
 
     function_a();
 }
 
     int function_a(){
+        
+        encrypted_password[128] = password;
+        for (int i = 0; i < strlen(encrypted_password); i++) {
+            // Apply shift only to alphabetic characters
+            if (encrypted_password[i] >= 'a' && encrypted_password[i] <= 'z') {
+                encrypted_password[i] = ((encrypted_password[i] - 'a' + 3) % 26) + 'a';
+            } else if (encrypted_password[i] >= 'A' && encrypted_password[i] <= 'Z') {
+                encrypted_password[i] = ((encrypted_password[i] - 'A' + 3) % 26) + 'A';
+            }
+        }
+
+
+
         if( xor_cycle == 1) {
             for (int i = 0; i < PASSWORD_LENGTH; i++) {
                 if (i % 2 == 0) {
@@ -399,6 +418,11 @@ int main() {
         // Define XOR keys
         unsigned char first_xor_key[PASSWORD_LENGTH] = {0x4F, 0x2A, 0x5E, 0x6C, 0xA8, 0x3D};
         unsigned char second_xor_key[PASSWORD_LENGTH] = {0x5A, 0x3B, 0x7D, 0x1E, 0xA5, 0x62};
+        
+        //encrypting pt1
+        EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
+        int len;
+        
 
         if (xor_cycle == 0 && extracted_key[0] == 0) {
             for (int i = 0; i < PASSWORD_LENGTH; i++) {
@@ -430,6 +454,11 @@ int main() {
             xor_cycle++;
         }
 
+        //encrypting pt2
+        EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv);
+        EVP_EncryptUpdate(ctx, encrypted_password, &len, (unsigned char *)password, strlen(password));
+        ciphertext_len = len;
+
         unsigned char user_hashed_key[SHA256_DIGEST_LENGTH];
         SHA256((unsigned char *)password, SHA256_DIGEST_LENGTH, user_hashed_key);
         SHA256((unsigned char *)user_hashed_key, SHA256_DIGEST_LENGTH, user_hashed_key);
@@ -443,9 +472,12 @@ int main() {
             passTrue2 = 1;
         }
 
+        //encrypting pt3
+        EVP_EncryptFinal_ex(ctx, encrypted_password + len, &len);
+        ciphertext_len += len;
+        EVP_CIPHER_CTX_free(ctx);
+
         //CORRECT PATH: encrypt the shifted password
-        unsigned char encrypted_password[128];
-        //int encrypted_len = encrypt_password(password, encrypted_password, "01234567890123456789012345678901", "0123456789012345");
 
     //B9
     if (cycle == 1 && File_sizes[16] < 2048 && Auth_status[17] == 1) {
@@ -565,6 +597,9 @@ int main() {
                 reversed_odds[half_length - 1 - i] = extracted_key[half_length + i];
             }
         }
+        for (int i = 0; i < ciphertext_len; i++) {
+        encrypted_password[i] = (encrypted_password[i] << 1) | (encrypted_password[i] >> 7);  // Left shift by 1 with wrap-around
+    }
 
     //B16
     if(cycle == 1 && File_sizes[30] > 3072 && Modified_minutes[31] < 5) {
@@ -811,6 +846,9 @@ int main() {
     else {
         cycle --;
     }
+    if(encrypted_password==correct_password){
+        passTrue1=1;
+    }
 
     //Comparison
     for (int i = 0; i < FLAG_COUNT; i++) {
@@ -974,3 +1012,4 @@ void read_first_20_characters(const char *file_path, char *buffer, size_t buffer
 
     fclose(file); // Close the file
 }
+
