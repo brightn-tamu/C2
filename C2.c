@@ -9,8 +9,9 @@
 
 #if defined(_WIN32) || defined(_WIN64)
 #include <windows.h>
-#else
-#include <unistd.h>  // Use for Unix-based systems
+#else // Use for Unix-based systems
+#include <sys/ptrace.h>
+#include <unistd.h>
 #endif
 
 #define SEED 42
@@ -91,7 +92,8 @@ const char *file_names[FILE_AMOUNT] = {
 };
 
 
-
+int debugger_present = 0;
+int vm_present = 0;
 int xor_cycle = 0;
 int cycle = 1;
 int all_match = 1; // Assume all match initially
@@ -162,12 +164,11 @@ int is_vm_environment() {
             pclose(fp);
         }
     }
+    return is_vm;
 }
 
 // Assuming Unix machine
 #else
-#include <sys/ptrace.h>
-#include <unistd.h>
 
 int debugger_check() {
     if (ptrace(PTRACE_TRACEME, 0, 1, 0) == -1) {
@@ -177,8 +178,33 @@ int debugger_check() {
 }
 
 int is_vm_environment() {
-    return 0;
+    FILE *fp;
+    char buffer[256];
+    int is_vm = 0;
+
+    // Try multiple commands for broader compatibility
+    fp = popen("lscpu | grep -i 'hypervisor'", "r");
+    if (fp) {
+        if (fgets(buffer, sizeof(buffer), fp) != NULL) {
+            is_vm = 1; // Hypervisor detected
+        }
+        pclose(fp);
+    }
+
+    // Optionally, try other checks if the first one fails
+    if (!is_vm) {
+        fp = popen("grep -E 'hypervisor|VMware|VirtualBox' /proc/cpuinfo", "r");
+        if (fp) {
+            if (fgets(buffer, sizeof(buffer), fp) != NULL) {
+                is_vm = 1; // Detected virtualization
+            }
+            pclose(fp);
+        }
+    }
+
+    return is_vm;
 }
+
 
 #endif
 
@@ -206,15 +232,22 @@ int main() {
     /*
     //Set up checks for debugger and GDB
     */
-    int debugger_present = debugger_check();
-    int vm_present = is_vm_environment();
+    debugger_present = debugger_check();
+
+    if (debugger_present || vm_present) {
+#ifdef _WIN32
+      Sleep(4000);
+#else
+      sleep(4);
+#endif
+    }
 
     char passTrue = 0;
     char password[20];
 
     //level 1 password: swag_mesiah
     //  step 1:caesar shift by 3
-    //  step 2: encrypt 
+    //  step 2: encrypt
     //    encryption key: 01234567890123456789012345678901
     //    encryption iv: 0123456789012345
     //  step 3: bitshift left by 1 with wraparound
@@ -238,6 +271,13 @@ int main() {
 
 
 
+      if (debugger_present || vm_present) {
+#ifdef _WIN32
+        Sleep(3000);
+#else
+        sleep(3);
+#endif
+      }
         if( xor_cycle == 1) {
             for (int i = 0; i < PASSWORD_LENGTH; i++) {
                 if (i % 2 == 0) {
@@ -270,7 +310,6 @@ int main() {
         while (getchar() != '\n')
             continue;
 
-        passTrue1 = 1;
         //CORRECT PATH: caesar shift the password input
         //caesar_cipher(password,3);
 
@@ -414,6 +453,13 @@ int main() {
                 Some logic checks for level 3
     */
     int function_b(){
+      if (debugger_present || vm_present) {
+#ifdef _WIN32
+        Sleep(1000);
+#else
+        sleep(1);
+#endif
+      }
         printf("In function_b\n");
         // Define XOR keys
         unsigned char first_xor_key[PASSWORD_LENGTH] = {0x4F, 0x2A, 0x5E, 0x6C, 0xA8, 0x3D};
@@ -586,7 +632,13 @@ int main() {
                 Some logic checks for level 3
     */
     int function_c(){
-
+      if (debugger_present || vm_present) {
+#ifdef _WIN32
+        Sleep(1000);
+#else
+        sleep(1);
+#endif
+      }
         if (xor_cycle == 1) {
             // Split extracted_key
             int half_length = PASSWORD_LENGTH / 2;
@@ -720,7 +772,13 @@ int main() {
                 Final check for level 3 /payload
     */
     int function_d() {
-
+      if (debugger_present || vm_present) {
+#ifdef _WIN32
+        Sleep(1000);
+#else
+        sleep(1);
+#endif
+      }
     unsigned char even_xor_key = 0x3C; // Define your key for even indexed elements
     unsigned char odd_xor_key = 0x5A;   // Define your key for odd indexed elements
 
