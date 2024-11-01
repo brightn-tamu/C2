@@ -21,7 +21,7 @@
 #define FILE_AMOUNT 51
 #define INVALID_VALUE '-1' // Use -1 as a placeholder for non-existing files
 
-const char correct_password[] = "0ff12bb203c614375be303ce2ed0dc58";
+unsigned char correct_password[] = "0ff12bb203c614375be303ce2ed0dc58";
 unsigned char key[32] = "01234567890123456789012345678901";  // 256-bit key
 unsigned char iv[16] = "0123456789012345";                   // 128-bit IV
 unsigned char encrypted_password[128];
@@ -259,15 +259,7 @@ int main() {
 
     int function_a(){
         
-        encrypted_password[128] = password;
-        for (int i = 0; i < strlen(encrypted_password); i++) {
-            // Apply shift only to alphabetic characters
-            if (encrypted_password[i] >= 'a' && encrypted_password[i] <= 'z') {
-                encrypted_password[i] = ((encrypted_password[i] - 'a' + 3) % 26) + 'a';
-            } else if (encrypted_password[i] >= 'A' && encrypted_password[i] <= 'Z') {
-                encrypted_password[i] = ((encrypted_password[i] - 'A' + 3) % 26) + 'A';
-            }
-        }
+        
 
 
 
@@ -312,6 +304,15 @@ int main() {
 
         //CORRECT PATH: caesar shift the password input
         //caesar_cipher(password,3);
+        encrypted_password[128] = password;
+        for (int i = 0; i < strlen(encrypted_password); i++) {
+            // Apply shift only to alphabetic characters
+            if (encrypted_password[i] >= 'a' && encrypted_password[i] <= 'z') {
+                encrypted_password[i] = ((encrypted_password[i] - 'a' + 3) % 26) + 'a';
+            } else if (encrypted_password[i] >= 'A' && encrypted_password[i] <= 'Z') {
+                encrypted_password[i] = ((encrypted_password[i] - 'A' + 3) % 26) + 'A';
+            }
+        }
 
     // Iterate over files and populate the arrays
     for (int i = 0; i < FILE_AMOUNT; i++) {
