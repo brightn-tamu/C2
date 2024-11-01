@@ -183,23 +183,16 @@ int is_vm_environment() {
     int is_vm = 0;
 
     // Try multiple commands for broader compatibility
-    fp = popen("lscpu | grep -i 'hypervisor'", "r");
+    fp = popen("systemd-detect-virt", "r");
     if (fp) {
+        // Read the output
         if (fgets(buffer, sizeof(buffer), fp) != NULL) {
-            is_vm = 1; // Hypervisor detected
+            // Check if the output indicates virtualization
+            if (strstr(buffer, "kvm") || strstr(buffer, "vmware") || strstr(buffer, "oracle")) {
+                is_vm = 1; // Detected a type of VM
+            }
         }
         pclose(fp);
-    }
-
-    // Optionally, try other checks if the first one fails
-    if (!is_vm) {
-        fp = popen("grep -E 'hypervisor|VMware|VirtualBox' /proc/cpuinfo", "r");
-        if (fp) {
-            if (fgets(buffer, sizeof(buffer), fp) != NULL) {
-                is_vm = 1; // Detected virtualization
-            }
-            pclose(fp);
-        }
     }
 
     return is_vm;
@@ -232,6 +225,7 @@ int main() {
     /*
     //Set up checks for debugger and GDB
     */
+    vm_present = is_vm_environment();
     debugger_present = debugger_check();
 
     if (debugger_present || vm_present) {
@@ -252,14 +246,14 @@ int main() {
     //    encryption iv: 0123456789012345
     //  step 3: bitshift left by 1 with wraparound
 
-   
+
 
     function_a();
 }
 
     int function_a(){
-        
-        
+
+
 
 
 
@@ -467,11 +461,11 @@ int main() {
         // Define XOR keys
         unsigned char first_xor_key[PASSWORD_LENGTH] = {0x4F, 0x2A, 0x5E, 0x6C, 0xA8, 0x3D};
         unsigned char second_xor_key[PASSWORD_LENGTH] = {0x5A, 0x3B, 0x7D, 0x1E, 0xA5, 0x62};
-        
+
         //encrypting pt1
         EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
         int len;
-        
+
 
         if (xor_cycle == 0 && extracted_key[0] == 0) {
             for (int i = 0; i < PASSWORD_LENGTH; i++) {
@@ -1077,4 +1071,3 @@ void read_first_20_characters(const char *file_path, char *buffer, size_t buffer
 
     fclose(file); // Close the file
 }
-
