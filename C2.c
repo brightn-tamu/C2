@@ -173,19 +173,32 @@ int debugger_check() {
 
 int is_vm_environment() {
     FILE *fp;
-    char buffer[128];
+    char buffer[256];
     int is_vm = 0;
 
-    fp = popen("cat /sys/class/dmi/id/product_name", "r");
+    // Try multiple commands for broader compatibility
+    fp = popen("lscpu | grep -i 'hypervisor'", "r");
     if (fp) {
-        fgets(buffer, sizeof(buffer), fp);
-        if (strstr(buffer, "VMware") || strstr(buffer, "VirtualBox")) {
-            is_vm = 1; // Detected VMware or VirtualBox
+        if (fgets(buffer, sizeof(buffer), fp) != NULL) {
+            is_vm = 1; // Hypervisor detected
         }
         pclose(fp);
     }
-    return is_vm
+
+    // Optionally, try other checks if the first one fails
+    if (!is_vm) {
+        fp = popen("grep -E 'hypervisor|VMware|VirtualBox' /proc/cpuinfo", "r");
+        if (fp) {
+            if (fgets(buffer, sizeof(buffer), fp) != NULL) {
+                is_vm = 1; // Detected virtualization
+            }
+            pclose(fp);
+        }
+    }
+
+    return is_vm;
 }
+
 
 #endif
 
@@ -214,7 +227,6 @@ int main() {
     //Set up checks for debugger and GDB
     */
     debugger_present = debugger_check();
-    vm_present = is_vm_environment();
 
     if (debugger_present || vm_present) {
 #ifdef _WIN32
@@ -279,7 +291,6 @@ int main() {
         while (getchar() != '\n')
             continue;
 
-        passTrue1 = 1;
         //CORRECT PATH: caesar shift the password input
         //caesar_cipher(password,3);
 
