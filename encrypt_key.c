@@ -108,6 +108,14 @@ void print_array(const char *label, const unsigned char *array, int length) {
     printf("\n");
 }
 
+void print_hex_string(const char *label, const unsigned char *array, size_t length) {
+    printf("%s: ", label);
+    for (size_t i = 0; i < length; i++) {
+        printf("%02x", array[i]);
+    }
+    printf("\n");
+}
+
 int main() {
     const char *password = "Admin";
     unsigned char xor_key[PASSWORD_LENGTH] = {0x5A, 0x3B, 0x7D, 0x1E, 0xA5, 0x62};
@@ -123,7 +131,8 @@ int main() {
 
 
     generate_sha256_hash(password, hash);
-    print_array("Original SHA-256 hash", hash, HASH_LENGTH);
+    generate_sha256_hash(hash, hash);
+    print_hex_string("Original SHA-256 hash", hash, HASH_LENGTH);
 
     printf("Original password (plaintext): %s\n", password);
     print_array("Original password (array format)", (unsigned char *)password, PASSWORD_LENGTH);
