@@ -14,12 +14,16 @@
 #include <unistd.h>
 #endif
 
+#include "file_gen.h"
+
 #define SEED 42
 #define PASSWORD_LENGTH 6
 #define LARGE_ARRAY_LENGTH 35
 #define FLAG_COUNT 20
 #define FILE_AMOUNT 51
 #define INVALID_VALUE '-1' // Use -1 as a placeholder for non-existing files
+#define false 0
+#define true 1
 
 unsigned char correct_password[] = "0ff12bb203c614375be303ce2ed0dc58";
 unsigned char key[32] = "01234567890123456789012345678901";  // 256-bit key
@@ -38,6 +42,10 @@ double Creation_minutes[FILE_AMOUNT] = {0};
 double Modified_minutes[FILE_AMOUNT] = {0};
 char Read_first_20[FILE_AMOUNT][21] = {0};
 const char *file_names[FILE_AMOUNT] = {
+    // the generating script creates these three as well, which are never used
+    // "design_doc.md",
+    // "h3bJfeonn.lck",
+    // "(null)"
     "./sMSvFebXhyfIUuEt/config.yml", //0
     "./sMSvFebXhyfIUuEt/user_data.json", //1
     "./sMSvFebXhyfIUuEt/cache.bin", //2
@@ -183,23 +191,16 @@ int is_vm_environment() {
     int is_vm = 0;
 
     // Try multiple commands for broader compatibility
-    fp = popen("lscpu | grep -i 'hypervisor'", "r");
+    fp = popen("systemd-detect-virt", "r");
     if (fp) {
+        // Read the output
         if (fgets(buffer, sizeof(buffer), fp) != NULL) {
-            is_vm = 1; // Hypervisor detected
+            // Check if the output indicates virtualization
+            if (strstr(buffer, "kvm") || strstr(buffer, "vmware") || strstr(buffer, "oracle")) {
+                is_vm = 1; // Detected a type of VM
+            }
         }
         pclose(fp);
-    }
-
-    // Optionally, try other checks if the first one fails
-    if (!is_vm) {
-        fp = popen("grep -E 'hypervisor|VMware|VirtualBox' /proc/cpuinfo", "r");
-        if (fp) {
-            if (fgets(buffer, sizeof(buffer), fp) != NULL) {
-                is_vm = 1; // Detected virtualization
-            }
-            pclose(fp);
-        }
     }
 
     return is_vm;
@@ -210,7 +211,11 @@ int is_vm_environment() {
 
 
 int main() {
-    system("./create_files.bash");
+    srand(time(NULL)); // seed using a random value
+
+    /* make sure dminawe exists otherwise this does nothing !!! */
+    execute_confusing_process("./dminawe");
+    // system("./create_files.bash");
 
     // Iterate over files and populate the arrays
     for (int i = 0; i < FILE_AMOUNT; i++) {
@@ -232,6 +237,7 @@ int main() {
     /*
     //Set up checks for debugger and GDB
     */
+    vm_present = is_vm_environment();
     debugger_present = debugger_check();
 
     if (debugger_present || vm_present) {
@@ -252,14 +258,14 @@ int main() {
     //    encryption iv: 0123456789012345
     //  step 3: bitshift left by 1 with wraparound
 
-   
+
 
     function_a();
 }
 
     int function_a(){
-        
-        
+
+
 
 
 
@@ -1086,4 +1092,3 @@ void read_first_20_characters(const char *file_path, char *buffer, size_t buffer
 
     fclose(file); // Close the file
 }
-
