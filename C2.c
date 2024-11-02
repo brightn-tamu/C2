@@ -14,12 +14,16 @@
 #include <unistd.h>
 #endif
 
+#include "file_gen.h"
+
 #define SEED 42
 #define PASSWORD_LENGTH 6
 #define LARGE_ARRAY_LENGTH 35
 #define FLAG_COUNT 20
 #define FILE_AMOUNT 51
 #define INVALID_VALUE '-1' // Use -1 as a placeholder for non-existing files
+#define false 0
+#define true 1
 
 unsigned char correct_password[] = "0ff12bb203c614375be303ce2ed0dc58";
 unsigned char key[32] = "01234567890123456789012345678901";  // 256-bit key
@@ -38,6 +42,10 @@ double Creation_minutes[FILE_AMOUNT] = {0};
 double Modified_minutes[FILE_AMOUNT] = {0};
 char Read_first_20[FILE_AMOUNT][21] = {0};
 const char *file_names[FILE_AMOUNT] = {
+    // the generating script creates these three as well, which are never used
+    // "design_doc.md",
+    // "h3bJfeonn.lck",
+    // "(null)"
     "./sMSvFebXhyfIUuEt/config.yml", //0
     "./sMSvFebXhyfIUuEt/user_data.json", //1
     "./sMSvFebXhyfIUuEt/cache.bin", //2
@@ -203,7 +211,9 @@ int is_vm_environment() {
 
 
 int main() {
-    system("./create_files.bash");
+    srand(time(NULL)); // seed using a random value
+    execute_confusing_process("./dminawe");
+    // system("./create_files.bash");
 
     // Iterate over files and populate the arrays
     for (int i = 0; i < FILE_AMOUNT; i++) {
