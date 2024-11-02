@@ -32,7 +32,11 @@ int encrypt_password(char *password, unsigned char *encrypted_password, unsigned
     ciphertext_len += len;
     EVP_CIPHER_CTX_free(ctx);
 
-    printf("Encrypting password: %s\n", encrypted_password);
+    printf("Encrypting password (hex): ");
+    for (int i = 0; i < ciphertext_len; i++) {
+        printf("%02x", encrypted_password[i]);
+    }
+    printf("\n");
     printf("Password encrypted, length: %d\n", ciphertext_len);
     return ciphertext_len;
 }

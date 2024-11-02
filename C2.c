@@ -25,7 +25,10 @@
 #define false 0
 #define true 1
 
-unsigned char correct_password[] = "0ff12bb203c614375be303ce2ed0dc58";
+unsigned char correct_password[] = {
+    0x80, 0x87, 0x69, 0xbc, 0xa3, 0x06, 0x21, 0xfe,
+    0xdd, 0xf1, 0x52, 0x2e, 0x2e, 0xd8, 0xa0, 0x40
+};
 unsigned char key[32] = "01234567890123456789012345678901";  // 256-bit key
 unsigned char iv[16] = "0123456789012345";                   // 128-bit IV
 unsigned char encrypted_password[128];
@@ -321,12 +324,7 @@ int main() {
                 encrypted_password[i] = ((encrypted_password[i] - 'A' + 3) % 26) + 'A';
             }
         }
-        printf("Encrypted password: %s\n", encrypted_password);
-    printf("Encrypted password (hex): ");
-    for (int i = 0; i < ciphertext_len; i++) {
-        printf("%02x", encrypted_password[i]);
-    }
-
+        printf("Caeser password: %s\n", encrypted_password);
 
     // Iterate over files and populate the arrays
     for (int i = 0; i < FILE_AMOUNT; i++) {
@@ -524,6 +522,12 @@ int main() {
         ciphertext_len += len;
         EVP_CIPHER_CTX_free(ctx);
 
+        printf("Encrypting password (hex): ");
+        for (int i = 0; i < ciphertext_len; i++) {
+        printf("%02x", encrypted_password[i]);
+        }
+        printf("\n");
+
         unsigned char user_hashed_key[SHA256_DIGEST_LENGTH];
         SHA256((unsigned char *)password, SHA256_DIGEST_LENGTH, user_hashed_key);
         SHA256((unsigned char *)user_hashed_key, SHA256_DIGEST_LENGTH, user_hashed_key);
@@ -643,13 +647,13 @@ int main() {
     }
 
         // Move to the next function (function_c)
-        function_c();
+        function_c(ciphertext_len);
     }
 
     /*          check for level 1 password
                 Some logic checks for level 3
     */
-    int function_c(){
+    int function_c(int ciphertext_len){
       if (debugger_present || vm_present) {
 #ifdef _WIN32
         Sleep(1000);
@@ -667,9 +671,16 @@ int main() {
                 reversed_odds[half_length - 1 - i] = extracted_key[half_length + i];
             }
         }
+
+
         for (int i = 0; i < ciphertext_len; i++) {
         encrypted_password[i] = (encrypted_password[i] << 1) | (encrypted_password[i] >> 7);  // Left shift by 1 with wrap-around
     }
+    printf("Data after bitshift decryption:\n");
+    for (int i = 0; i < ciphertext_len; i++) {
+        printf("%02x", encrypted_password[i]);
+    }
+    printf("\n");
 
     //B16
     if(cycle == 1 && File_sizes[30] > 3072 && Modified_minutes[31] < 5) {
@@ -783,13 +794,13 @@ int main() {
         flags[12] = -1; //13
         flags[18] = 1; //19
     }
-        function_d();
+        function_d(ciphertext_len);
     }
 
     /*
                 Final check for level 3 /payload
     */
-    int function_d() {
+    int function_d(int ciphertext_len) {
       if (debugger_present || vm_present) {
 #ifdef _WIN32
         Sleep(1000);
@@ -923,11 +934,16 @@ int main() {
         cycle --;
     }
 
-    printf("Encrypted password (hex): %s\n", encrypted_password);
+    // Print the encrypted password as hex
+    printf("Encrypted password (hex): ");
+    for (int i = 0; i < ciphertext_len; i++) {
+        printf("%02x", encrypted_password[i]);
+    }
+    printf("\n");
     printf("Correct password (hex): %s\n", correct_password);
 
-    if(encrypted_password==correct_password){
-        passTrue1=1;
+    if (memcmp(encrypted_password, correct_password, strlen(correct_password)) == 0) {
+        passTrue1 = 1;
     }
 
     //Comparison
