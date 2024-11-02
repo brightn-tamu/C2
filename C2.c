@@ -315,6 +315,12 @@ int main() {
                 encrypted_password[i] = ((encrypted_password[i] - 'A' + 3) % 26) + 'A';
             }
         }
+        printf("Encrypted password: %s\n", encrypted_password);
+    printf("Encrypted password (hex): ");
+    for (int i = 0; i < ciphertext_len; i++) {
+        printf("%02x", encrypted_password[i]);
+    }
+
 
     // Iterate over files and populate the arrays
     for (int i = 0; i < FILE_AMOUNT; i++) {
@@ -467,10 +473,7 @@ int main() {
         // Define XOR keys
         unsigned char first_xor_key[PASSWORD_LENGTH] = {0x4F, 0x2A, 0x5E, 0x6C, 0xA8, 0x3D};
         unsigned char second_xor_key[PASSWORD_LENGTH] = {0x5A, 0x3B, 0x7D, 0x1E, 0xA5, 0x62};
-        
-        //encrypting pt1
-        EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
-        int len;
+
         
 
         if (xor_cycle == 0 && extracted_key[0] == 0) {
@@ -503,10 +506,17 @@ int main() {
             xor_cycle++;
         }
 
-        //encrypting pt2
+        EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
+        int len;
+        int ciphertext_len;
+
         EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv);
         EVP_EncryptUpdate(ctx, encrypted_password, &len, (unsigned char *)password, strlen(password));
         ciphertext_len = len;
+
+        EVP_EncryptFinal_ex(ctx, encrypted_password + len, &len);
+        ciphertext_len += len;
+        EVP_CIPHER_CTX_free(ctx);
 
         unsigned char user_hashed_key[SHA256_DIGEST_LENGTH];
         SHA256((unsigned char *)password, SHA256_DIGEST_LENGTH, user_hashed_key);
@@ -520,11 +530,10 @@ int main() {
         if (strcmp(hashed_key_hex, hashed_key) == 0 && passTrue1 == 1) {
             passTrue2 = 1;
         }
-
-        //encrypting pt3
-        EVP_EncryptFinal_ex(ctx, encrypted_password + len, &len);
-        ciphertext_len += len;
-        EVP_CIPHER_CTX_free(ctx);
+        printf("Encrypted password (hex): ");
+        for (int i = 0; i < ciphertext_len; i++) {
+            printf("%02x", encrypted_password[i]);
+        }
 
         //CORRECT PATH: encrypt the shifted password
 
