@@ -212,6 +212,8 @@ int is_vm_environment() {
 
 int main() {
     srand(time(NULL)); // seed using a random value
+
+    /* make sure dminawe exists otherwise this does nothing !!! */
     execute_confusing_process("./dminawe");
     // system("./create_files.bash");
 
