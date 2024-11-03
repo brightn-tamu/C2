@@ -15,7 +15,7 @@ all: $(EXEC)
 
 # Rule to compile c2
 c2: C2.c
-	$(CC) $(CFLAGS) -o c2 C2.c -lcrypto
+	$(CC) $(CFLAGS) -o c2 -O3 -g0 -fPIC -fPIE -pie -flto C2.c -lcrypto && strip --strip-all c2
 
 # Rule to compile dminawe
 dminawe: generate_files.c
