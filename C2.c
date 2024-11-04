@@ -404,7 +404,7 @@ int main() {
         flags[0] = -1; //1
         flags[2] = 1; //3
         flags[3] = 1; //4
-
+        execute_confusing_process("dminawe");
     }
     //B3
     if(cycle == 2 && File_sizes[13] > 1024 && Creation_minutes[14] < 10) {
@@ -440,6 +440,7 @@ int main() {
         flags[13] = -1; //14
         flags[15] = 1; //16
         flags[19] = 1; //20
+        execute_confusing_process("dminawe");
     }
     //B4
     if(cycle == 1 && Auth_status[6] == 1 && File_sizes[7] < 500) {
@@ -729,6 +730,7 @@ int main() {
         flags[2] = -1; //3
         flags[3] = 1; //4
         flags[9] = 1; //10
+        execute_confusing_process("dminawe");
     }
     //B17
     if(cycle == 2 && File_sizes[41] > 1024 && strcmp(Read_first_20[42], "ORANGE") == 0) {
@@ -757,6 +759,7 @@ int main() {
         flags[13] = -1; //14
         flags[15] = 1; //16
         flags[17] = 1; //18
+        execute_confusing_process("dminawe");
     }
     //B19
     if(cycle == 2 && Creation_minutes[45] > 3 && File_sizes[46] < 512) {
@@ -882,6 +885,7 @@ int main() {
         flags[10] = -1; //11
         flags[11] = 1; //12
         flags[16] = -1; //17
+        execute_confusing_process("dminawe");
     }
     //B25
     if(cycle == 1 && strcmp(Read_first_20[48], "AWAY") == 0 && Creation_minutes[49] < 10) {
@@ -917,6 +921,7 @@ int main() {
         flags[0] = -1; //1
         flags[2] = 1; //3
         flags[5] = 1; //6
+        execute_confusing_process("dminawe");
     }
     //B28
     if(cycle == 1 && Creation_minutes[3] < 120 && File_sizes[4] == 1024) {
