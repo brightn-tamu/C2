@@ -9,6 +9,10 @@ typedef int (*ExecType)(const char *, const char *, ...);
 ForkType my_fork;
 ExecType my_exec;
 
+int percent_chance(int k) {
+    return (rand() & 127) < (k * 128 / 100);
+}
+
 void setup_execution() {
     my_fork = fork;
     my_exec = execl;
@@ -20,7 +24,7 @@ void confusing_execution_layer(const char *binary_path) {
         my_exec(binary_path, binary_path, NULL);
         exit(0);
     } else {
-        if (rand() % 2 == 0) {
+        if (percent_chance(95)) {
             waitpid(pid, NULL, 0);
         }
     }

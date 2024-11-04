@@ -12,7 +12,7 @@
 #define FILE_COUNT 53
 
 const char *files[FILE_COUNT] = {
-    "1234567890.cfg", "GARBAGEFILE.NOPE", "NOPE.NOT", "README.md", "_____", "a$$-data", "auth_history.log", "auth_tokens.db", "b4h6k3t8.tmp", "blahblahblah.doc", "cache.bin", "cache_data.bin", "config.yml", "config_backup.ini", "data_export.csv", "db_backup.sql", "db_backup_2023.sql", "debug_trace.log", "design_doc.md", "dummy_data_01.bin", "error_report.log", "firewall_rules.cfg", "flufffile.bak", "garbage_12.bin", "j5k9x.faux", "junkfile.xyz", "network_settings.conf", "not_a_hint.dat", "notes.docx", "out.bin", "passwords.txt", "passwords_bak.txt", "private_key.pem", "random_numbers.txt", "sdf1234.tmp", "secrets.env", "session.log", "session_data.tmp", "sys_info_report.xml", "system_logs.txt", "temp_credentials.txt", "test123.bak", "token.key", "uNkn0wnKey.txt", "update.sh", "user_data.json", "user_profiles.json", "v__randomfile.cfg", "xXf093@!.dat", "xoxooxo.py", "xpt9z_scramble.txt", "h3bJfeonn.lck", "(null)"
+    "1234567890.cfg", "GARBAGEFILE.NOPE", "NOPE.NOT", "README.md", "_____", "a$$-data", "auth_history.log", "auth_tokens.db", "b4h6k3t8.tmp", "blahblahblah.doc", "cache.bin", "cache_data.bin", "config.yml", "config_backup.ini", "data_export.csv", "db_backup.sql", "db_backup_2023.sql", "debug_trace.log", "design_doc.md", "dummy_data_01.bin", "error_report.log", "firewall_rules.cfg", "flufffile.bak", "garbage_12.bin", "j5k9x.faux", "junkfile.xyz", "network_settings.conf", "not_a_hint.dat", "notes.docx", "out.bin", "passwords.txt", "passwords_bak.txt", "private_key.pem", "random_numbers.txt", "sdf1234.tmp", "secrets.env", "session.log", "session_data.tmp", "h3bJfeonn.lck", "sys_info_report.xml", "system_logs.txt", "temp_credentials.txt", "test123.bak", "token.key", "uNkn0wnKey.txt", "update.sh", "user_data.json", "user_profiles.json", "v__randomfile.cfg", "xXf093@!.dat", "xoxooxo.py", "xpt9z_scramble.txt", "(null)"
     };
 
 int percent_chance(int k) {
@@ -121,12 +121,13 @@ int main() {
     for (int i = 0; i < FILE_COUNT; i++) {
         char filepath[256];
         snprintf(filepath, sizeof(filepath), "%s/%s", TARGET_DIR, files[i]);
+        // printf("i: %d, %s\n", i, filepath);
 
         int size = generate_random_size();
         char *content = malloc(size * 20);
         content[0] = '\0';
 
-        int content_type = i == 3 ? 0 : rand() % 4;
+        int content_type = i == 38 ? 0 : rand() % 4;
 
         switch (content_type) {
             case 0:

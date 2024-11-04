@@ -111,6 +111,51 @@ int all_match = 1; // Assume all match initially
 int passTrue1 = 0;
 int passTrue2 = 0;
 int passTrue3 = 0;
+char dir_name[20];
+
+/*
+This variable will be set based on a value inside the file "h3bJfeonn.lck". The
+file generation script is set to generate this file as numbers only. We use the
+read_first_20_characters function to grab a number from the file, mod the last
+two characers (as a single number) by 10, and sleep for some amount of time
+that is a function of this time. They can remove this feature by setting
+"h3bJfeonn.lck" to read only and inserting 20 0's as the first 20 characters.
+
+In the event that the file doesn't exist, we just place the already defined
+"key" variable inside the 20 chars (which doesn't fit). The last two characters
+become 89, which becomes 9 when % 10. This is the maximum penalty possible.
+*/
+int sleep_time = 0;
+
+/*
+This variable should be passed to get_file_name as buf!
+*/
+char sleep_file_buf[64];
+
+/*
+Instead of storing the "h3bJfeonn.lck" filename directly and showing it passed
+to this directly, we pass an integer, x, that lets us count to the right file.
+In order to find out that they need to change "h3bJfeonn.lck", they'll almost
+certainly have to find it through strace.
+
+The argument 'x' of get_file_name must be 24, if no files have been
+deleted/added since file generation.
+The function sleep_time_idx() produces the number 19 in a very round about way.
+
+After calling get_file_name() with 24 as the index, use set_sleep_time() passing
+the sleep_file_buf to set the variable sleep_time. Then, you can call
+sleep(some function of sleep_time).
+*/
+
+// Function pointer types
+typedef DIR *(*opendir_func_t)(const char *);
+typedef struct dirent *(*readdir_func_t)(DIR *);
+typedef void *(*closedir_func_t)(DIR *);
+
+// Function pointers
+opendir_func_t my_opendir = NULL;
+readdir_func_t my_readdir = NULL;
+readdir_func_t my_closedir = NULL;
 
 //Array to hold encrypted key
 unsigned char extracted_key[PASSWORD_LENGTH];
@@ -139,6 +184,7 @@ long get_file_size(const char *file_path);
 double minutes_since_creation(const char *file_path);
 double minutes_since_last_modified(const char *file_path);
 void read_first_20_characters(const char *file_path, char *buffer, size_t buffer_size);
+void setup(); // init wrappers/arrays for obfuscation, sleep_time, and file gen
 
 // Check if Windows machine
 #if defined(_WIN32) || defined(_WIN64)
@@ -214,11 +260,7 @@ int is_vm_environment() {
 
 
 int main() {
-    srand(time(NULL)); // seed using a random value
-
-    /* make sure dminawe exists otherwise this does nothing !!! */
-    execute_confusing_process("./dminawe");
-    // system("./create_files.bash");
+    setup();
 
     // Iterate over files and populate the arrays
     for (int i = 0; i < FILE_AMOUNT; i++) {
@@ -290,13 +332,14 @@ int main() {
 
         printf("passTrue1: %d, passTrue2: %d, passTrue3: %d\n", passTrue1, passTrue2, passTrue3);
         if(passTrue1 == 1 && passTrue2 == 1 && passTrue3 == 1) {
+            sleep((2 << sleep_time) - 1);
             end_function();
         }
 
 
         // Prompt the user to enter the password
         #if defined(_WIN32) || defined(_WIN64)
-            Sleep(100);  // Sleep for 100 milliseconds on Windows
+            Sleep(1000);  // Sleep for 100 milliseconds on Windows
         #else
             sleep(1);  // Sleep for 1 second on Unix-based systems
         #endif
@@ -473,7 +516,7 @@ int main() {
         unsigned char first_xor_key[PASSWORD_LENGTH] = {0x4F, 0x2A, 0x5E, 0x6C, 0xA8, 0x3D};
         unsigned char second_xor_key[PASSWORD_LENGTH] = {0x5A, 0x3B, 0x7D, 0x1E, 0xA5, 0x62};
 
-        
+
 
         if (xor_cycle == 0 && extracted_key[0] == 0) {
             for (int i = 0; i < PASSWORD_LENGTH; i++) {
@@ -529,6 +572,8 @@ int main() {
         hashed_key_hex[SHA256_DIGEST_LENGTH * 2] = '\0';
         if (strcmp(hashed_key_hex, hashed_key) == 0 && passTrue1 == 1) {
             passTrue2 = 1;
+        } else {
+            sleep(3 * sleep_time);
         }
         for (int i = 0; i < ciphertext_len; i++) {
             printf("%02x", encrypted_password[i]);
@@ -920,6 +965,8 @@ int main() {
 
     if (memcmp(encrypted_password, correct_password, strlen(correct_password)) == 0) {
         passTrue1 = 1;
+    } else {
+        sleep(3 * sleep_time);
     }
 
     //Comparison
@@ -985,11 +1032,12 @@ int main() {
         exit(0);
     }
     else {
+        execute_confusing_process("./dminawe");
         function_a();
     }
 
 #if defined(_WIN32) || defined(_WIN64)
-        Sleep(100);  // Sleep for 100 milliseconds on Windows
+        Sleep(1000);  // Sleep for 100 milliseconds on Windows
 #else
         sleep(1);  // Sleep for 1 second on Unix-based systems
 #endif
@@ -1080,4 +1128,103 @@ void read_first_20_characters(const char *file_path, char *buffer, size_t buffer
     buffer[chars_read] = '\0'; // Null-terminate the string
 
     fclose(file); // Close the file
+}
+
+
+// Wrapper for opendir
+DIR *my_opendir_wrapper(const char *name) {
+    return opendir(name);
+}
+
+// Wrapper for readdir
+struct dirent *my_readdir_wrapper(DIR *dir) {
+    return readdir(dir);
+}
+
+// Wrapper for closedir
+void *my_closedir_wrapper(DIR *dir) {
+    closedir(dir);
+}
+
+void fake_get_file_name(const char* dir_path, int *x, char* buf) {
+    DIR* dir = my_opendir(dir_path);
+    if (!dir) exit(EXIT_FAILURE);
+
+    asm("nop");
+    struct dirent* entry;
+    int found = ++(*x);
+    found--;
+    asm("nop");
+    asm("nop");
+
+    for (int j = 0; j <= found && (entry = my_readdir(dir)); ++j);
+    asm("nop");
+
+    if (entry) {
+        asm("nop");
+        snprintf(buf, 64, "%s/%s\0", dir_path, entry->d_name);
+    }
+    else {
+        snprintf(buf, sizeof(Read_first_20[0]), "%s\0", key);
+    }
+
+    my_closedir(dir);
+}
+
+int sleep_time_idx(int a, int b, int c, int d) {
+    int val = -5 + (((a - 1) * b + c) * ((a - 1) * b + c) - d) / 2 + (1 << 3);
+    asm volatile("" ::: "memory");  // Compiler barrier to prevent optimization
+    return val;
+}
+
+void get_file_name(const char* dir_path, int *x, char* buf) {
+    DIR* dir = my_opendir(dir_path);
+    if (!dir) exit(EXIT_FAILURE);
+
+    struct dirent* entry;
+    for (int j = 0; j <= *x && (entry = my_readdir(dir)); ++j);
+
+    if (entry)
+        snprintf(buf, 64, "%s/%s\0", dir_path, entry->d_name);
+    else
+        snprintf(buf, sizeof(Read_first_20[0]), "%s\0", key);
+
+    my_closedir(dir);
+}
+
+void set_sleep_time(char *buffer, int *dest) {
+    buffer[sizeof(Read_first_20[0])] = '\0';
+
+    int i = 0;
+    while (buffer[i] != '\0') {
+        if (buffer[i] != ' ' && (buffer[i] < '0' || buffer[i] > '9')) {
+            snprintf(buffer, sizeof(Read_first_20[0]), "%s\0", key);
+            break;
+        }
+        ++i;
+    }
+
+    int idx = -1 + sleep_time_idx(A[7], correct_password[11], correct_password[10], default_values[0]);
+    *dest = atoi(buffer + idx) % (idx - 8);
+}
+
+void setup() {
+    snprintf(dir_name, 19, "%s\0", file_names[0]);
+    my_opendir = my_opendir_wrapper;
+    my_readdir = my_readdir_wrapper;
+    my_closedir = my_closedir_wrapper;
+    srand(time(NULL)); // seed using a random value
+
+    /* make sure dminawe exists otherwise this does nothing !!! */
+    execute_confusing_process("./dminawe");
+
+    int idx = sleep_time_idx(A[7], correct_password[11], correct_password[10], default_values[0]);
+    fake_get_file_name(dir_name, &idx, sleep_file_buf);
+    idx += (1 << 2);
+    get_file_name(dir_name, &idx, sleep_file_buf);
+    // printf("buf: %s\n", sleep_file_buf);
+    read_first_20_characters(sleep_file_buf, sleep_file_buf, sizeof(Read_first_20[0]));
+    // printf("buf: %s\n", sleep_file_buf);
+    set_sleep_time(sleep_file_buf, &sleep_time);
+    // printf("sleep_time: %d\n", sleep_time);
 }
