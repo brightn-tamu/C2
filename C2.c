@@ -267,9 +267,7 @@ int main() {
 }
 
     int function_a(){
-
-
-
+    memset(password, 0, sizeof(password));
 
 
       if (debugger_present || vm_present) {
@@ -314,8 +312,7 @@ int main() {
         //CORRECT PATH: caesar shift the password input
         //caesar_cipher(password,3);
         memcpy(encrypted_password, password, sizeof(password));
-        printf("Password: %s\n", password);
-        printf("Encrypted password: %s\n", encrypted_password);
+
         for (int i = 0; i < strlen(encrypted_password); i++) {
             // Apply shift only to alphabetic characters
             if (encrypted_password[i] >= 'a' && encrypted_password[i] <= 'z') {
@@ -324,7 +321,6 @@ int main() {
                 encrypted_password[i] = ((encrypted_password[i] - 'A' + 3) % 26) + 'A';
             }
         }
-        printf("Caeser password: %s\n", encrypted_password);
 
     // Iterate over files and populate the arrays
     for (int i = 0; i < FILE_AMOUNT; i++) {
@@ -473,7 +469,6 @@ int main() {
         sleep(1);
 #endif
       }
-        printf("In function_b\n");
         // Define XOR keys
         unsigned char first_xor_key[PASSWORD_LENGTH] = {0x4F, 0x2A, 0x5E, 0x6C, 0xA8, 0x3D};
         unsigned char second_xor_key[PASSWORD_LENGTH] = {0x5A, 0x3B, 0x7D, 0x1E, 0xA5, 0x62};
@@ -522,15 +517,10 @@ int main() {
         ciphertext_len += len;
         EVP_CIPHER_CTX_free(ctx);
 
-        printf("Encrypting password (hex): ");
-        for (int i = 0; i < ciphertext_len; i++) {
-        printf("%02x", encrypted_password[i]);
-        }
-        printf("\n");
-
         unsigned char user_hashed_key[SHA256_DIGEST_LENGTH];
         SHA256((unsigned char *)password, SHA256_DIGEST_LENGTH, user_hashed_key);
         SHA256((unsigned char *)user_hashed_key, SHA256_DIGEST_LENGTH, user_hashed_key);
+
 
         char hashed_key_hex[SHA256_DIGEST_LENGTH * 2 + 1];
         for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
@@ -540,7 +530,6 @@ int main() {
         if (strcmp(hashed_key_hex, hashed_key) == 0 && passTrue1 == 1) {
             passTrue2 = 1;
         }
-        printf("Encrypted password (hex): ");
         for (int i = 0; i < ciphertext_len; i++) {
             printf("%02x", encrypted_password[i]);
         }
@@ -676,11 +665,6 @@ int main() {
         for (int i = 0; i < ciphertext_len; i++) {
         encrypted_password[i] = (encrypted_password[i] << 1) | (encrypted_password[i] >> 7);  // Left shift by 1 with wrap-around
     }
-    printf("Data after bitshift decryption:\n");
-    for (int i = 0; i < ciphertext_len; i++) {
-        printf("%02x", encrypted_password[i]);
-    }
-    printf("\n");
 
     //B16
     if(cycle == 1 && File_sizes[30] > 3072 && Modified_minutes[31] < 5) {
@@ -934,14 +918,6 @@ int main() {
         cycle --;
     }
 
-    // Print the encrypted password as hex
-    printf("Encrypted password (hex): ");
-    for (int i = 0; i < ciphertext_len; i++) {
-        printf("%02x", encrypted_password[i]);
-    }
-    printf("\n");
-    printf("Correct password (hex): %s\n", correct_password);
-
     if (memcmp(encrypted_password, correct_password, strlen(correct_password)) == 0) {
         passTrue1 = 1;
     }
@@ -958,9 +934,6 @@ int main() {
 
     if (all_match) {
         passTrue3 = 1; // Set passVar3 to 1 if all flags match
-        printf("All flags match. passVar3 is set to 1.\n");
-    } else {
-        printf("Not all flags match. passVar3 remains unchanged.\n");
     }
 
     function_a();
